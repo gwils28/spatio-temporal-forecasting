@@ -1,0 +1,23 @@
+---
+title: "Journal de bord"
+subtitle: "Le déroulé daté du projet : décisions, surprises, corrections"
+categories: [journal]
+---
+
+Ce journal trace ce qui s'est passé, dans l'ordre, y compris les erreurs. Les décisions de
+fond sont dans [`SPEC.md`](https://github.com/gwils28/spatio-temporal-forecasting/blob/main/SPEC.md),
+et les écarts au plan dans les
+[notes d'implémentation](https://github.com/gwils28/spatio-temporal-forecasting/blob/main/docs/notes/implementation.md).
+
+## 21 mai 2026 — Cadrage
+
+- Point de départ : une esquisse de plan (veille STFM / STID, code STID vs STGNN, system
+  design, lecture DCRNN).
+- **Interview de cadrage** avant tout code. Décisions : dépôt public avec site Quarto,
+  **Graph WaveNet** comme modèle graphe (adjacence route + adaptative, rapide à entraîner),
+  **PyTorch pur** plutôt que `torch-geometric-temporal` ou BasicTS, **protocole complet avec
+  une graine**.
+- Critère de décision écrit *avant* les résultats : le graphe gagne si +3 % de MAE à 60 min
+  **et** si le gain est attribuable au graphe.
+- Vérification des quatre références sur arXiv. Correction d'une idée reçue : l'article
+  STID **n'évalue pas METR-LA**. Les chiffres STID / METR-LA viennent de BasicTS.
