@@ -26,3 +26,30 @@ compute / latence / complexité ?
 - Zéros = valeurs manquantes : masqués dans la perte **et** les métriques.
 - Métriques : MAE, RMSE, MAPE masqués à 15 / 30 / 60 min (pas 3 / 6 / 12) + moyenne.
 - Sélection : meilleure MAE validation ; le test n'est lu qu'une fois par run.
+
+## Expériences
+
+| Run | Rôle |
+|---|---|
+| `ha`, `last_value` | bornes basses sans apprentissage |
+| `stid` | baseline non-graphe fort (identités espace + temps) |
+| `stid_no_node`, `stid_no_time`, `stid_no_ids` | ablation : démontrer l'indistinguabilité |
+| `gwnet` | Graph WaveNet complet (route + adaptative) |
+| `gwnet_road`, `gwnet_adaptive`, `gwnet_nograph` | ablation : d'où vient le graphe |
+
+## Critère de décision (fixé avant résultats)
+
+Le graphe « gagne son pari » si **les deux** conditions tiennent :
+1. gain de MAE à 60 min ≥ **3 %** relatif vs STID (≈ 0,1 mph, au-delà du bruit inter-seed
+   typique rapporté par BasicTS) ;
+2. et ce gain est attribuable au graphe : `gwnet` bat nettement `gwnet_nograph`.
+
+Sinon la recommandation par défaut est STID, et le graphe reste une option à
+re-tester quand la topologie apporte une information absente des identités
+(réseau neuf, nœuds sans historique).
+
+## Livrables
+
+1. Code + tests (`src/stforecast`, `tests/`).
+2. Tableau métriques par horizon + ablations + coût (`results/`).
+3. Site Quarto (veille, concepts, EDA, résultats, system design, lecture DCRNN).
