@@ -1,0 +1,17 @@
+# Données brutes (téléchargées via scripts/download_data.sh)
+data/
+artifacts/
+logs/
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+# Quarto
+site/_site/
+site/.quarto/
+/.quarto/
+*_files/
+# Jupyter
+.ipynb_checkpoints/
