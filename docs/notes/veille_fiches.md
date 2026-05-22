@@ -22,3 +22,21 @@ avec le PDF avant toute citation chiffrée.
   domaine), OpenCity et TFM (FM graphiques pour le transport), UniST (« one-for-all »),
   UrbanGPT (KDD 2024), Pangu (Nature 2023), Chronos, Time-MoE.
 - Pas d'expérience propre : c'est une carte du domaine.
+
+## 2. UrbanFM: Scaling Urban Spatio-Temporal Foundation Models
+
+- arXiv:2602.20677, v1 24 fév. 2026, v2 2 mars 2026 — Chen, Wu, Chen, Zhou, Liang
+  (HKUST(GZ), HKUST). [V]
+- Trois axes de passage à l'échelle [V] :
+  - **Données** : *WorldST*, > 1 milliard de points, 100+ villes, 8 domaines
+    (flux, vitesse…) standardisés.
+  - **Calcul** : *MiniST*, découpage des champs ST (grille ou capteurs) en unités
+    d'apprentissage (clustering glouton à capacité fixe via KD-Tree, puis patchs
+    spatio-temporels).
+  - **Architecture** : self-attention minimaliste, factorisée temps puis espace,
+    RoPE temporel et spatial, RevIN, objectif génératif à futur masqué.
+- Benchmark *EvalST* ; METR-LA et PEMS-BAY en font partie. [R]
+- Résultats annoncés [R, à confirmer] : zero-shot +39 % à +70 % vs FM existants ;
+  few-shot (10 % des données) au-dessus des modèles experts entraînés sur 100 %.
+- Limites [R] : coût d'ingénierie des grands modèles, peu de données grille,
+  dégradation avec des contextes trop longs.
