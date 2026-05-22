@@ -19,3 +19,16 @@ from torch.utils.data import DataLoader, Dataset
 
 STEPS_PER_DAY = 288  # 24 h à 5 min
 DEFAULT_RAW = Path("data/raw")
+
+
+def load_metr_la(path: str | Path = DEFAULT_RAW / "metr-la.h5") -> pd.DataFrame:
+    """Lit le HDF5 d'origine (format pandas 2019) via h5py.
+
+    Retourne un DataFrame (T, N) indexé par horodatage, colonnes = ids capteurs.
+    """
+    with h5py.File(path, "r") as f:
+        g = f["df"]
+        values = g["block0_values"][:].astype(np.float32)
+        cols = [c.decode() for c in g["axis0"][:]]
+        index = pd.to_datetime(g["axis1"][:])
+    return pd.DataFrame(values, index=index, columns=cols)
