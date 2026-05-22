@@ -40,3 +40,10 @@ def load_adjacency(path: str | Path = DEFAULT_RAW / "adj_mx.pkl") -> tuple[list[
     with open(path, "rb") as f:
         sensor_ids, _, adj = pickle.load(f, encoding="latin1")
     return list(sensor_ids), adj.astype(np.float32)
+
+
+def load_locations(path: str | Path = DEFAULT_RAW / "graph_sensor_locations.csv") -> pd.DataFrame:
+    """Coordonnées (lat, lon) des capteurs, dans l'ordre du fichier."""
+    df = pd.read_csv(path)
+    df["sensor_id"] = df["sensor_id"].astype(str)
+    return df
