@@ -33,3 +33,10 @@ def load_metr_la(path: str | Path = DEFAULT_RAW / "metr-la.h5") -> pd.DataFrame:
         cols = [c.decode() for c in g["axis0"][:]]
         index = pd.to_datetime(g["axis1"][:])
     return pd.DataFrame(values, index=index, columns=cols)
+
+
+def load_adjacency(path: str | Path = DEFAULT_RAW / "adj_mx.pkl") -> tuple[list[str], np.ndarray]:
+    """Adjacence routière de DCRNN : noyau gaussien sur distances réseau, seuillé."""
+    with open(path, "rb") as f:
+        sensor_ids, _, adj = pickle.load(f, encoding="latin1")
+    return list(sensor_ids), adj.astype(np.float32)
