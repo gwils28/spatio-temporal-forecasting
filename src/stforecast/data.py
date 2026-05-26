@@ -86,3 +86,33 @@ def split_indices(starts: np.ndarray, ratios=(0.7, 0.1, 0.2)) -> dict[str, np.nd
         "val": starts[n_train : n_train + n_val],
         "test": starts[n_train + n_val :],
     }
+
+
+class WindowDataset(Dataset):
+    """Fenêtres glissantes paresseuses : aucune copie (T, 12, N) en mémoire.
+
+    x : (in_len, N, 3) = [vitesse normalisée, tod/288, dow/7]
+    y : (out_len, N)   = vitesse brute (mph), 0 = manquant
+    tod, dow : indices entiers du dernier pas d'entrée (identités STID)
+    """
+
+    def __init__(self, speed, tod, dow, starts, scaler, in_len=12, out_len=12):
+        self.speed = torch.as_tensor(speed, dtype=torch.float32)
+        self.speed_n = torch.as_tensor(scaler.transform(speed), dtype=torch.float32)
+        self.tod = torch.as_tensor(tod)
+        self.dow = torch.as_tensor(dow)
+        self.starts = np.asarray(starts)
+        self.in_len, self.out_len = in_len, out_len
+        n = speed.shape[1]
+        self._tod_f = (self.tod.float() / STEPS_PER_DAY)[:, None].expand(-1, n)
+        self._dow_f = (self.dow.float() / 7.0)[:, None].expand(-1, n)
+
+    def __len__(self):
+        return len(self.starts)
+
+    def __getitem__(self, i):
+        t = int(self.starts[i])
+        a, b, c = t, t + self.in_len, t + self.in_len + self.out_len
+        x = torch.stack([self.speed_n[a:b], self._tod_f[a:b], self._dow_f[a:b]], dim=-1)
+        y = self.speed[b:c]
+        return x, y, self.tod[b - 1], self.dow[b - 1]
