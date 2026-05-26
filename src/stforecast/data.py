@@ -116,3 +116,37 @@ class WindowDataset(Dataset):
         x = torch.stack([self.speed_n[a:b], self._tod_f[a:b], self._dow_f[a:b]], dim=-1)
         y = self.speed[b:c]
         return x, y, self.tod[b - 1], self.dow[b - 1]
+
+
+@dataclass
+class DataBundle:
+    loaders: dict[str, DataLoader]
+    scaler: StandardScaler
+    adj: np.ndarray
+    sensor_ids: list[str]
+    index: pd.DatetimeIndex
+    splits: dict[str, np.ndarray]
+    num_nodes: int
+
+
+def build_data(raw_dir: str | Path = DEFAULT_RAW, batch_size: int = 64, in_len: int = 12,
+               out_len: int = 12, num_workers: int = 2) -> DataBundle:
+    """Pipeline complet : lecture → fenêtres → split → scaler (train) → DataLoaders."""
+    raw_dir = Path(raw_dir)
+    df = load_metr_la(raw_dir / "metr-la.h5")
+    sensor_ids, adj = load_adjacency(raw_dir / "adj_mx.pkl")
+    assert list(df.columns) == sensor_ids, "ordre capteurs incohérent entre h5 et adjacence"
+    speed = df.to_numpy()
+    tod, dow = time_features(df.index)
+    splits = split_indices(make_windows(len(df), in_len, out_len))
+    # Scaler ajusté sur les seuls pas couverts par les entrées d'entraînement.
+    last_train_step = splits["train"][-1] + in_len
+    train_vals = speed[:last_train_step]
+    scaler = StandardScaler(float(train_vals.mean()), float(train_vals.std()))
+    loaders = {}
+    for name, starts in splits.items():
+        ds = WindowDataset(speed, tod, dow, starts, scaler, in_len, out_len)
+        loaders[name] = DataLoader(ds, batch_size=batch_size, shuffle=(name == "train"),
+                                   num_workers=num_workers, drop_last=False,
+                                   persistent_workers=num_workers > 0)
+    return DataBundle(loaders, scaler, adj, sensor_ids, df.index, splits, speed.shape[1])
