@@ -68,3 +68,8 @@ class StandardScaler:
 
     def inverse_transform(self, x):
         return x * self.std + self.mean
+
+
+def make_windows(n_steps: int, in_len: int = 12, out_len: int = 12) -> np.ndarray:
+    """Indices de début des fenêtres valides : entrée [t, t+in), cible [t+in, t+in+out)."""
+    return np.arange(0, n_steps - in_len - out_len + 1)
