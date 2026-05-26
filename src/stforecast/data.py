@@ -54,3 +54,17 @@ def time_features(index: pd.DatetimeIndex) -> tuple[np.ndarray, np.ndarray]:
     tod = (index.hour * 60 + index.minute) // 5
     dow = index.dayofweek
     return np.asarray(tod, dtype=np.int64), np.asarray(dow, dtype=np.int64)
+
+
+@dataclass
+class StandardScaler:
+    """Z-score scalaire (une moyenne / un écart-type pour tout le réseau)."""
+
+    mean: float
+    std: float
+
+    def transform(self, x):
+        return (x - self.mean) / self.std
+
+    def inverse_transform(self, x):
+        return x * self.std + self.mean
