@@ -47,3 +47,10 @@ def load_locations(path: str | Path = DEFAULT_RAW / "graph_sensor_locations.csv"
     df = pd.read_csv(path)
     df["sensor_id"] = df["sensor_id"].astype(str)
     return df
+
+
+def time_features(index: pd.DatetimeIndex) -> tuple[np.ndarray, np.ndarray]:
+    """Identités temporelles : créneau dans la journée (0..287) et jour de semaine (0..6)."""
+    tod = (index.hour * 60 + index.minute) // 5
+    dow = index.dayofweek
+    return np.asarray(tod, dtype=np.int64), np.asarray(dow, dtype=np.int64)
