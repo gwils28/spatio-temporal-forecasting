@@ -15,3 +15,8 @@ def _mask(target: torch.Tensor, null_val: float = 0.0) -> torch.Tensor:
 def masked_mae(pred, target, null_val=0.0):
     m = _mask(target, null_val)
     return torch.nan_to_num((pred - target).abs() * m).mean()
+
+
+def masked_rmse(pred, target, null_val=0.0):
+    m = _mask(target, null_val)
+    return torch.nan_to_num((pred - target) ** 2 * m).mean().sqrt()
