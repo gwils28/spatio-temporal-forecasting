@@ -21,3 +21,13 @@ et les écarts au plan dans les
   **et** si le gain est attribuable au graphe.
 - Vérification des quatre références sur arXiv. Correction d'une idée reçue : l'article
   STID **n'évalue pas METR-LA**. Les chiffres STID / METR-LA viennent de BasicTS.
+
+## 27 mai 2026 — Données : le piège HDF5
+
+- `metr-la.h5` téléchargé depuis le Google Drive référencé par le dépôt DCRNN, et le graphe
+  depuis `data/sensor_graph/`.
+- `pd.read_hdf` échoue : `TypeError: a bytes-like object is required, not 'str'`. Le fichier
+  date de 2019 (format *fixed* de PyTables). **Solution** : lecture directe des blocs avec
+  `h5py`, et assertion que l'ordre des capteurs est identique entre le h5 et `adj_mx.pkl`.
+- 34 272 pas × 207 capteurs, **8,1 % de zéros**, qui sont des pannes et pas des
+  embouteillages.
