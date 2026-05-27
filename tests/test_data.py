@@ -20,3 +20,18 @@ def test_time_features_ranges():
     assert tod.min() == 0 and tod.max() == 287
     assert set(dow) == set(range(7))
     assert tod[12] == 12  # 01:00 → 12e créneau
+
+
+def test_window_alignment(toy_series):
+    speed, tod, dow, scaler = toy_series
+    ds = WindowDataset(speed, tod, dow, np.array([5]), scaler)
+    x, y, t, d = ds[0]
+    assert x.shape == (12, 4, 3) and y.shape == (12, 4)
+    np.testing.assert_allclose(y.numpy(), speed[17:29])
+    np.testing.assert_allclose(scaler.inverse_transform(x[..., 0].numpy()), speed[5:17], rtol=1e-5)
+    assert int(t) == tod[16]  # identité = dernier pas observé
+
+
+def test_scaler_roundtrip(toy_series):
+    speed, *_, scaler = toy_series
+    np.testing.assert_allclose(scaler.inverse_transform(scaler.transform(speed)), speed, rtol=1e-5)
