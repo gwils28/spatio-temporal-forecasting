@@ -20,3 +20,9 @@ def masked_mae(pred, target, null_val=0.0):
 def masked_rmse(pred, target, null_val=0.0):
     m = _mask(target, null_val)
     return torch.nan_to_num((pred - target) ** 2 * m).mean().sqrt()
+
+
+def masked_mape(pred, target, null_val=0.0):
+    m = _mask(target, null_val)
+    ape = (pred - target).abs() / target.abs().clamp_min(1e-8)
+    return torch.nan_to_num(ape * m).mean() * 100.0
