@@ -31,3 +31,14 @@ def predict_ha(table: np.ndarray, tod: np.ndarray, dow: np.ndarray, starts: np.n
     """(n_windows, out_len, N) : profil hebdomadaire lu aux instants cibles."""
     idx = starts[:, None] + in_len + np.arange(out_len)[None, :]
     return table[dow[idx] * STEPS_PER_DAY + tod[idx]]
+
+
+def predict_last_value(speed: np.ndarray, starts: np.ndarray, in_len: int = 12,
+                       out_len: int = 12) -> np.ndarray:
+    """Persistance : dernière valeur *non nulle* observée dans la fenêtre, répétée."""
+    win = speed[starts[:, None] + np.arange(in_len)[None, :]]  # (W, L, N)
+    last = np.zeros((win.shape[0], win.shape[2]), dtype=np.float32)
+    for k in range(in_len):
+        v = win[:, k]
+        last = np.where(v > 0, v, last)
+    return np.repeat(last[:, None, :], out_len, axis=1)
