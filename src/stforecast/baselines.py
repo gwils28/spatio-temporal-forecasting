@@ -24,3 +24,10 @@ def historical_average(speed: np.ndarray, tod: np.ndarray, dow: np.ndarray,
     node_mean = (v * valid).sum(0) / np.maximum(valid.sum(0), 1)
     table = np.where(counts > 0, sums / np.maximum(counts, 1), node_mean[None, :])
     return table.astype(np.float32)
+
+
+def predict_ha(table: np.ndarray, tod: np.ndarray, dow: np.ndarray, starts: np.ndarray,
+               in_len: int = 12, out_len: int = 12) -> np.ndarray:
+    """(n_windows, out_len, N) : profil hebdomadaire lu aux instants cibles."""
+    idx = starts[:, None] + in_len + np.arange(out_len)[None, :]
+    return table[dow[idx] * STEPS_PER_DAY + tod[idx]]
