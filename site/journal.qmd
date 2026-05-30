@@ -31,3 +31,11 @@ et les écarts au plan dans les
   `h5py`, et assertion que l'ordre des capteurs est identique entre le h5 et `adj_mx.pkl`.
 - 34 272 pas × 207 capteurs, **8,1 % de zéros**, qui sont des pannes et pas des
   embouteillages.
+
+## 30 mai 2026 — Métriques, baselines, protocole validé
+
+- Métriques masquées (zéros exclus) aux pas 3, 6 et 12.
+- **Moyenne historique : 4,19 de MAE**, contre 4,16 dans DCRNN. Le split, le masque et les
+  métriques sont alignés sur la littérature. C'est le premier contrôle de cohérence, et il
+  passe.
+- Persistance : 3,71 → 6,14 de 15 à 60 min. Elle bat la moyenne historique jusqu'à ≈ 20 min.
