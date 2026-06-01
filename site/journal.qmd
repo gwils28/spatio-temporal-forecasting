@@ -39,3 +39,10 @@ et les écarts au plan dans les
   métriques sont alignés sur la littérature. C'est le premier contrôle de cohérence, et il
   passe.
 - Persistance : 3,71 → 6,14 de 15 à 60 min. Elle bat la moyenne historique jusqu'à ≈ 20 min.
+
+## 1er juin 2026 — Lecture DCRNN, supports de diffusion
+
+- Lecture complète de DCRNN : diffusion **bidirectionnelle** sur graphe orienté, DCGRU,
+  seq2seq, scheduled sampling.
+- Implémentation des transitions $D_O^{-1}W$ et $D_I^{-1}W^\top$, réutilisées telles quelles
+  par Graph WaveNet.
