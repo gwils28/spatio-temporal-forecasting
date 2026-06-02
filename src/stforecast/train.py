@@ -40,3 +40,7 @@ def build_model(cfg: dict, bundle, device) -> torch.nn.Module:
         params["supports"] = supports
         params["adaptive"] = "adaptive" in graph
     return MODELS[name](num_nodes=bundle.num_nodes, **params).to(device)
+
+
+def _forward(model, x, tod, dow):
+    return model(x, tod=tod, dow=dow)
