@@ -165,3 +165,18 @@ def train(cfg: dict, out_root: Path = Path("results"), art_root: Path = Path("ar
     print(f"[{run}] TEST MAE 15/30/60 = {h['15min']['mae']:.2f} / {h['30min']['mae']:.2f} / "
           f"{h['60min']['mae']:.2f}")
     return metrics
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--config", required=True)
+    ap.add_argument("--epochs", type=int, help="surcharge (smoke test)")
+    args = ap.parse_args(argv)
+    cfg = yaml.safe_load(Path(args.config).read_text())
+    if args.epochs:
+        cfg["train"]["epochs"] = args.epochs
+    train(cfg)
+
+
+if __name__ == "__main__":
+    main()
