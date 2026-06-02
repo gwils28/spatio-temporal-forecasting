@@ -44,3 +44,15 @@ def build_model(cfg: dict, bundle, device) -> torch.nn.Module:
 
 def _forward(model, x, tod, dow):
     return model(x, tod=tod, dow=dow)
+
+
+@torch.no_grad()
+def predict(model, loader, scaler, device):
+    model.eval()
+    preds, ys = [], []
+    for x, y, tod, dow in loader:
+        x, tod, dow = x.to(device), tod.to(device), dow.to(device)
+        out = scaler.inverse_transform(_forward(model, x, tod, dow))
+        preds.append(out.cpu())
+        ys.append(y)
+    return torch.cat(preds), torch.cat(ys)
