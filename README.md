@@ -13,3 +13,15 @@ montrer qu'il bat un baseline *non-graphe* bien conçu, d'une marge qui justifie
 surcoût en calcul, en latence et en dette technique.
 
 Protocole et critère de décision fixés **avant** les résultats : [`SPEC.md`](SPEC.md).
+
+## Structure
+
+```
+src/stforecast/      données, métriques, graphe, baselines, modèles (STID, Graph WaveNet), entraînement
+configs/             une config YAML par run (8 runs)
+scripts/             téléchargement, lancement, baselines, figures, notebook
+tests/               24 tests unitaires (pytest, < 1 s)
+results/             métriques, courbes et coûts de chaque run (versionnés)
+site/                site Quarto (veille, concepts, expérience, system design, journal)
+docs/notes/          fiches de veille vérifiées, notes d'implémentation
+```
