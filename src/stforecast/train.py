@@ -22,3 +22,8 @@ from .data import build_data
 from .graph import double_transition
 from .metrics import horizon_metrics, masked_mae, per_step_metrics
 from .models import MODELS
+
+
+def set_seed(seed: int) -> None:
+    torch.manual_seed(seed)
+    np.random.seed(seed)
