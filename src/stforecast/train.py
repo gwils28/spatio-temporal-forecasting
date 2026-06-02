@@ -27,3 +27,16 @@ from .models import MODELS
 def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
     np.random.seed(seed)
+
+
+def build_model(cfg: dict, bundle, device) -> torch.nn.Module:
+    name = cfg["model"]
+    params = dict(cfg.get("model_params", {}))
+    if name == "gwnet":
+        graph = params.pop("graph", "road+adaptive")
+        supports = []
+        if "road" in graph:
+            supports = [torch.tensor(a) for a in double_transition(bundle.adj)]
+        params["supports"] = supports
+        params["adaptive"] = "adaptive" in graph
+    return MODELS[name](num_nodes=bundle.num_nodes, **params).to(device)
