@@ -18,3 +18,10 @@ pur, modèles réécrits. `torch-geometric-temporal` n'est plus activement maint
 BasicTS est une boîte noire lourde. Les hyperparamètres restent ceux de BasicTS (STID) et
 de l'article (Graph WaveNet). La reproduction de STID (2.80 / 3.17 / 3.54) recoupe les
 chiffres publiés par BasicTS (≈ 2.82 / 3.19 / 3.55) : l'implémentation est validée.
+
+## STID : entrée à 3 canaux
+
+L'article STID n'utilise que la vitesse dans l'embedding de série. La configuration
+BasicTS pour METR-LA passe `input_dim = 3` (vitesse, heure, jour), et nous suivons
+BasicTS. Les identités temporelles sont lues au **dernier pas observé**, comme dans
+BasicTS.
