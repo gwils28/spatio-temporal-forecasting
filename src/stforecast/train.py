@@ -56,3 +56,24 @@ def predict(model, loader, scaler, device):
         preds.append(out.cpu())
         ys.append(y)
     return torch.cat(preds), torch.cat(ys)
+
+
+@torch.no_grad()
+def measure_latency(model, loader, device, n_iter=50):
+    """Latence d'inférence (ms) pour un batch de taille 1 (dispatch temps réel) et 64."""
+    model.eval()
+    x, _, tod, dow = next(iter(loader))
+    res = {}
+    for bs in (1, 64):
+        xb, tb, db = x[:bs].to(device), tod[:bs].to(device), dow[:bs].to(device)
+        for _ in range(10):
+            _forward(model, xb, tb, db)
+        if device.type == "cuda":
+            torch.cuda.synchronize()
+        t0 = time.perf_counter()
+        for _ in range(n_iter):
+            _forward(model, xb, tb, db)
+        if device.type == "cuda":
+            torch.cuda.synchronize()
+        res[f"latency_ms_bs{bs}"] = (time.perf_counter() - t0) / n_iter * 1000
+    return res
