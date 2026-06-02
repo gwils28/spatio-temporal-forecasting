@@ -46,3 +46,10 @@ et les écarts au plan dans les
   seq2seq, scheduled sampling.
 - Implémentation des transitions $D_O^{-1}W$ et $D_I^{-1}W^\top$, réutilisées telles quelles
   par Graph WaveNet.
+
+## 2 juin 2026 — STID réécrit
+
+- STID en ~100 lignes : embedding de fenêtre, trois identités apprises, trois blocs MLP
+  résiduels.
+- Test qui fixe l'intuition : même fenêtre sur deux capteurs → même prédiction sans
+  identité, prédictions différentes avec.
