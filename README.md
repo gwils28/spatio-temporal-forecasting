@@ -25,3 +25,14 @@ results/             métriques, courbes et coûts de chaque run (versionnés)
 site/                site Quarto (veille, concepts, expérience, system design, journal)
 docs/notes/          fiches de veille vérifiées, notes d'implémentation
 ```
+
+## Reproduire
+
+```bash
+uv sync                                   # Python 3.12, torch CUDA 12.8
+./scripts/download_data.sh                # METR-LA + graphe capteurs (dépôt DCRNN)
+make check                                # ruff + pytest
+./scripts/run_all.sh                      # 8 entraînements (≈ 3 h sur RTX 5070 Laptop)
+uv run python scripts/eval_baselines.py   # moyenne historique, persistance
+make figures site                         # figures, tableaux, notebook, site
+```
