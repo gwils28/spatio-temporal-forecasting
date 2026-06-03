@@ -97,7 +97,7 @@ class WindowDataset(Dataset):
     """
 
     def __init__(self, speed, tod, dow, starts, scaler, in_len=12, out_len=12):
-        self.speed = torch.as_tensor(speed, dtype=torch.float32)
+        self.speed = torch.tensor(np.array(speed), dtype=torch.float32)
         self.speed_n = torch.as_tensor(scaler.transform(speed), dtype=torch.float32)
         self.tod = torch.as_tensor(tod)
         self.dow = torch.as_tensor(dow)
