@@ -1,0 +1,11 @@
+{
+  "params": 117868,
+  "epoch_s_mean": 5.762488007409993,
+  "epochs_run": 100,
+  "best_epoch": 86,
+  "train_time_to_best_s": 495.29462993700054,
+  "peak_gpu_mem_mb": 44.4462890625,
+  "device": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "latency_ms_bs1": 0.17150085999674047,
+  "latency_ms_bs64": 0.5926938199991127
+}
