@@ -57,10 +57,10 @@ class STID(nn.Module):
 
     def forward(self, x, tod, dow, **_):
         """x : (B, L, N, C) ; tod, dow : (B,) indices du dernier pas observé → (B, out_len, N)."""
-        b, l, n, _ = x.shape
+        b, seq_len, n, _ = x.shape
         x = x[..., : self.input_dim]
         # (B, L, N, C) → (B, L*C, N, 1) : chaque nœud devient un vecteur « fenêtre ».
-        h = x.permute(0, 2, 1, 3).reshape(b, n, l * self.input_dim).transpose(1, 2).unsqueeze(-1)
+        h = x.permute(0, 2, 1, 3).reshape(b, n, seq_len * self.input_dim).transpose(1, 2).unsqueeze(-1)
         parts = [self.ts_embed(h)]
         if self.use_node:
             parts.append(self.node_emb.T.unsqueeze(0).expand(b, -1, -1).unsqueeze(-1))
