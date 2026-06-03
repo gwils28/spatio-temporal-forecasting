@@ -53,3 +53,11 @@ et les écarts au plan dans les
   résiduels.
 - Test qui fixe l'intuition : même fenêtre sur deux capteurs → même prédiction sans
   identité, prédictions différentes avec.
+
+## 3 juin 2026 — STID reproduit
+
+- Smoke test : **STID 1,3 s par époque, Graph WaveNet 34 s**. L'écart de coût est visible
+  dès la première minute.
+- Warning PyTorch sur un tableau numpy non inscriptible, corrigé par une copie explicite.
+- **STID : 2,80 / 3,17 / 3,54**, contre ≈ 2,82 / 3,19 / 3,55 dans BasicTS. Implémentation
+  validée.
