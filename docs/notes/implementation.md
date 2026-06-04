@@ -32,3 +32,10 @@ Le budget retenu est le protocole complet avec une graine. L'écart STID / GWNet
 mince, on ne peut pas exclure qu'il soit dans le bruit inter-seed. C'est pour ça que le
 critère de décision (SPEC) demande une marge de 3 % **et** une attribution au graphe via
 l'ablation. Piste : 3 graines sur `stid` et `gwnet` uniquement (≈ 3 h).
+
+## Entraînements en parallèle sur un GPU
+
+Deux files d'entraînement partagent le GPU (RTX 5070 Laptop, 8 Go). Les temps par époque
+absolus sont donc **pessimistes** (contention), mais les **ratios** STID / GWNet restent
+comparables. La latence d'inférence est mesurée après l'entraînement, avec la même
+contention possible. Elle est indicative.
