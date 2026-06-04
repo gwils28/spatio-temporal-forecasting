@@ -25,3 +25,10 @@ L'article STID n'utilise que la vitesse dans l'embedding de série. La configura
 BasicTS pour METR-LA passe `input_dim = 3` (vitesse, heure, jour), et nous suivons
 BasicTS. Les identités temporelles sont lues au **dernier pas observé**, comme dans
 BasicTS.
+
+## Une seule graine
+
+Le budget retenu est le protocole complet avec une graine. L'écart STID / GWNet étant
+mince, on ne peut pas exclure qu'il soit dans le bruit inter-seed. C'est pour ça que le
+critère de décision (SPEC) demande une marge de 3 % **et** une attribution au graphe via
+l'ablation. Piste : 3 graines sur `stid` et `gwnet` uniquement (≈ 3 h).
