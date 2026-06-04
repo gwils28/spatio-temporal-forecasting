@@ -12,3 +12,8 @@ from __future__ import annotations
 import torch
 import torch.nn.functional as F
 from torch import nn
+
+
+def nconv(x: torch.Tensor, a: torch.Tensor) -> torch.Tensor:
+    """Propagation sur graphe : x (B, C, N, T), a (N, N) → Σ_v x[..., v, :] a[v, w]."""
+    return torch.einsum("ncvl,vw->ncwl", x, a).contiguous()
