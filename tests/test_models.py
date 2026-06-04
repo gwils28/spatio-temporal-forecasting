@@ -1,7 +1,9 @@
+import numpy as np
 import pytest
 import torch
 
-from stforecast.models import STID
+from stforecast.graph import double_transition, k_hop_reach, random_walk
+from stforecast.models import STID, GraphWaveNet
 
 B, L, N = 4, 12, 6
 
@@ -27,3 +29,12 @@ def test_stid_node_identity_breaks_symmetry():
     p, q = plain(x, tod, dow), ided(x, tod, dow)
     assert torch.allclose(p[:, :, 0], p[:, :, 1])
     assert not torch.allclose(q[:, :, 0], q[:, :, 1])
+
+
+@pytest.mark.parametrize("n_sup,adaptive", [(2, True), (2, False), (0, True), (0, False)])
+def test_gwnet_shapes(n_sup, adaptive):
+    x, *_ = _inputs()
+    sup = [torch.tensor(a) for a in double_transition(np.random.rand(N, N).astype(np.float32))][:n_sup]
+    m = GraphWaveNet(num_nodes=N, supports=sup, adaptive=adaptive)
+    assert m.receptive_field == 13
+    assert m(x).shape == (B, 12, N)
