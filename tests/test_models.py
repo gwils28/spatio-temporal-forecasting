@@ -52,3 +52,9 @@ def test_gwnet_nograph_has_no_spatial_mixing():
 def test_adaptive_adj_row_stochastic():
     m = GraphWaveNet(num_nodes=N)
     assert torch.allclose(m.adaptive_adj().sum(1), torch.ones(N), atol=1e-5)
+
+
+def test_random_walk_rows_sum_to_one():
+    a = np.array([[0, 2, 0], [1, 0, 1], [0, 0, 0]], dtype=np.float32)
+    p = random_walk(a)
+    np.testing.assert_allclose(p.sum(1), [1, 1, 0])
