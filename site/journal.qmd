@@ -61,3 +61,11 @@ et les écarts au plan dans les
 - Warning PyTorch sur un tableau numpy non inscriptible, corrigé par une copie explicite.
 - **STID : 2,80 / 3,17 / 3,54**, contre ≈ 2,82 / 3,19 / 3,55 dans BasicTS. Implémentation
   validée.
+
+## 4 juin 2026 — Ablation STID : l'identité spatiale décide
+
+- Sans identité spatiale, 4,39 à 60 min (+24 %). Sans aucune identité, 4,53, **pire que la
+  moyenne historique**.
+- Sans identités temporelles, 3,60 seulement. Explication : l'heure et le jour sont aussi
+  présents en canaux bruts d'entrée (`input_dim = 3`). C'est noté pour ne pas
+  sur-interpréter.
