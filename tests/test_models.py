@@ -38,3 +38,12 @@ def test_gwnet_shapes(n_sup, adaptive):
     m = GraphWaveNet(num_nodes=N, supports=sup, adaptive=adaptive)
     assert m.receptive_field == 13
     assert m(x).shape == (B, 12, N)
+
+
+def test_gwnet_nograph_has_no_spatial_mixing():
+    """Sans graphe, perturber le capteur 0 ne doit pas changer la prédiction du capteur 1."""
+    m = GraphWaveNet(num_nodes=N, supports=[], adaptive=False).eval()
+    x, *_ = _inputs()
+    x2 = x.clone()
+    x2[:, :, 0] += 5
+    assert torch.allclose(m(x)[:, :, 1], m(x2)[:, :, 1], atol=1e-6)
