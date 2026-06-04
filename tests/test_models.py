@@ -58,3 +58,8 @@ def test_random_walk_rows_sum_to_one():
     a = np.array([[0, 2, 0], [1, 0, 1], [0, 0, 0]], dtype=np.float32)
     p = random_walk(a)
     np.testing.assert_allclose(p.sum(1), [1, 1, 0])
+
+
+def test_k_hop_reach_chain():
+    a = np.diag(np.ones(4), 1).astype(np.float32)  # chaîne orientée 0→1→2→3→4
+    assert list(k_hop_reach(a, 2)) == [3, 3, 3, 2, 1]
