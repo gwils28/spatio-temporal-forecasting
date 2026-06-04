@@ -47,3 +47,8 @@ def test_gwnet_nograph_has_no_spatial_mixing():
     x2 = x.clone()
     x2[:, :, 0] += 5
     assert torch.allclose(m(x)[:, :, 1], m(x2)[:, :, 1], atol=1e-6)
+
+
+def test_adaptive_adj_row_stochastic():
+    m = GraphWaveNet(num_nodes=N)
+    assert torch.allclose(m.adaptive_adj().sum(1), torch.ones(N), atol=1e-5)
