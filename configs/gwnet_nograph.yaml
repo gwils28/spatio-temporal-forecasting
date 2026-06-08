@@ -1,0 +1,6 @@
+# Graph WaveNet — graphe : none (hyperparamètres du papier)
+name: gwnet_nograph
+model: gwnet
+seed: 0
+model_params: {graph: "none", in_dim: 2, residual_channels: 32, dilation_channels: 32, skip_channels: 256, end_channels: 512, blocks: 4, layers: 2, dropout: 0.3}
+train: {batch_size: 64, lr: 0.001, weight_decay: 0.0001, epochs: 100, clip: 5, patience: 30}

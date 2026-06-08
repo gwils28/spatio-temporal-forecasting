@@ -1,7 +1,9 @@
+import numpy as np
 import pytest
 import torch
 
-from stforecast.models import STID
+from stforecast.graph import double_transition, k_hop_reach, random_walk
+from stforecast.models import STID, GraphWaveNet
 
 B, L, N = 4, 12, 6
 
@@ -27,3 +29,37 @@ def test_stid_node_identity_breaks_symmetry():
     p, q = plain(x, tod, dow), ided(x, tod, dow)
     assert torch.allclose(p[:, :, 0], p[:, :, 1])
     assert not torch.allclose(q[:, :, 0], q[:, :, 1])
+
+
+@pytest.mark.parametrize("n_sup,adaptive", [(2, True), (2, False), (0, True), (0, False)])
+def test_gwnet_shapes(n_sup, adaptive):
+    x, *_ = _inputs()
+    sup = [torch.tensor(a) for a in double_transition(np.random.rand(N, N).astype(np.float32))][:n_sup]
+    m = GraphWaveNet(num_nodes=N, supports=sup, adaptive=adaptive)
+    assert m.receptive_field == 13
+    assert m(x).shape == (B, 12, N)
+
+
+def test_gwnet_nograph_has_no_spatial_mixing():
+    """Sans graphe, perturber le capteur 0 ne doit pas changer la prédiction du capteur 1."""
+    m = GraphWaveNet(num_nodes=N, supports=[], adaptive=False).eval()
+    x, *_ = _inputs()
+    x2 = x.clone()
+    x2[:, :, 0] += 5
+    assert torch.allclose(m(x)[:, :, 1], m(x2)[:, :, 1], atol=1e-6)
+
+
+def test_adaptive_adj_row_stochastic():
+    m = GraphWaveNet(num_nodes=N)
+    assert torch.allclose(m.adaptive_adj().sum(1), torch.ones(N), atol=1e-5)
+
+
+def test_random_walk_rows_sum_to_one():
+    a = np.array([[0, 2, 0], [1, 0, 1], [0, 0, 0]], dtype=np.float32)
+    p = random_walk(a)
+    np.testing.assert_allclose(p.sum(1), [1, 1, 0])
+
+
+def test_k_hop_reach_chain():
+    a = np.diag(np.ones(4), 1).astype(np.float32)  # chaîne orientée 0→1→2→3→4
+    assert list(k_hop_reach(a, 2)) == [3, 3, 3, 2, 1]

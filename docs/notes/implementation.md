@@ -39,3 +39,11 @@ Deux files d'entraînement partagent le GPU (RTX 5070 Laptop, 8 Go). Les temps p
 absolus sont donc **pessimistes** (contention), mais les **ratios** STID / GWNet restent
 comparables. La latence d'inférence est mesurée après l'entraînement, avec la même
 contention possible. Elle est indicative.
+
+## Graph WaveNet plutôt que DCRNN
+
+DCRNN est le papier de lecture du jour, mais sa récurrence est environ 3 fois plus lente
+que Graph WaveNet et 13 à 36 fois plus lente que STID, selon le tableau d'efficacité de
+l'article STID. Graph WaveNet réutilise **exactement** le support de
+diffusion bidirectionnel de DCRNN (`double_transition`), auquel il ajoute l'adjacence
+apprise. C'est ce qui permet l'ablation « d'où vient le graphe ».
