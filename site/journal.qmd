@@ -69,3 +69,10 @@ et les écarts au plan dans les
 - Sans identités temporelles, 3,60 seulement. Explication : l'heure et le jour sont aussi
   présents en canaux bruts d'entrée (`input_dim = 3`). C'est noté pour ne pas
   sur-interpréter.
+
+## 8 juin 2026 — Graph WaveNet implémenté
+
+- ~150 lignes : TCN dilaté à porte, diffusion multi-supports, adjacence adaptative.
+- Supports configurables (route, adaptative, les deux, aucun) pour l'ablation.
+- Test clé : sans graphe, perturber le capteur 0 ne change **rien** à la prédiction du
+  capteur 1.
