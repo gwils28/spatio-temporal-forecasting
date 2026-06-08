@@ -1,0 +1,25 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Installer (torch CPU)
+        run: |
+          uv venv
+          uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+          uv pip install numpy pandas h5py scipy matplotlib pyyaml pytest ruff
+          uv pip install --no-deps -e .
+      - name: Lint
+        run: uv run --no-sync ruff check src tests scripts
+      - name: Tests
+        run: uv run --no-sync pytest
