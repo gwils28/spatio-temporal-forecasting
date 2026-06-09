@@ -47,3 +47,9 @@ que Graph WaveNet et 13 à 36 fois plus lente que STID, selon le tableau d'effic
 l'article STID. Graph WaveNet réutilise **exactement** le support de
 diffusion bidirectionnel de DCRNN (`double_transition`), auquel il ajoute l'adjacence
 apprise. C'est ce qui permet l'ablation « d'où vient le graphe ».
+
+## Early stopping
+
+Patience de 30 époques, 100 au maximum. Les articles entraînent 100 époques fixes et
+gardent la meilleure validation. Avec une patience de 30, le résultat est identique dès
+lors que la meilleure époque est atteinte avant l'arrêt, ce que les courbes confirment.
