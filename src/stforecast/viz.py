@@ -42,3 +42,8 @@ def setup() -> None:
         "axes.axisbelow": True, "lines.linewidth": 2, "legend.frameon": False,
         "axes.prop_cycle": mpl.cycler(color=CAT),
     })
+
+
+def save(fig, path) -> None:
+    fig.savefig(path)
+    plt.close(fig)
