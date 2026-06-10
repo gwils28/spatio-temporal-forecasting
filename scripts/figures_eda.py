@@ -48,3 +48,24 @@ def speed_heatmap(df, adj):
     ax.set_title("Une semaine de vitesses : congestions récurrentes et trous capteurs (blanc)")
     fig.colorbar(im, ax=ax, label="mph", shrink=0.85)
     viz.save(fig, OUT / "eda_speed_heatmap.png")
+
+
+def daily_profile(df):
+    s = df.replace(0, np.nan)
+    tod = s.index.hour + s.index.minute / 60
+    wk = s.index.day_of_week < 5
+    fig, ax = plt.subplots(figsize=(8, 3.8))
+    for mask, lab, c in [(wk, "Semaine", viz.CAT[0]), (~wk, "Week-end", viz.CAT[1])]:
+        prof = s[mask].groupby(tod[mask]).mean().mean(axis=1)
+        q = s[mask].groupby(tod[mask]).mean()
+        ax.fill_between(prof.index, q.quantile(0.1, axis=1), q.quantile(0.9, axis=1), color=c, alpha=0.12, lw=0)
+        ax.plot(prof.index, prof, color=c, label=lab)
+        ax.text(prof.index[-1] + 0.2, prof.iloc[-1], lab, color=viz.INK2, va="center", fontsize=9)
+    ax.set_xlim(0, 26)
+    ax.set_xticks(range(0, 25, 3))
+    ax.set_xlabel("Heure de la journée")
+    ax.set_ylabel("Vitesse (mph)")
+    ax.set_title("Profil journalier : deux pointes en semaine, quasi plat le week-end")
+    ax.text(0.01, 0.02, "Ligne : moyenne réseau · bande : capteurs P10–P90", transform=ax.transAxes,
+            color=viz.MUTED, fontsize=8)
+    viz.save(fig, OUT / "eda_daily_profile.png")
