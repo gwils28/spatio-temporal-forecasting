@@ -88,3 +88,29 @@ def missing(df):
                  x=0.01, ha="left", fontweight="bold")
     fig.tight_layout()
     viz.save(fig, OUT / "eda_missing.png")
+
+
+def adjacency(adj):
+    fig, axes = plt.subplots(1, 3, figsize=(12, 3.8))
+    im = axes[0].imshow(np.where(adj > 0, adj, np.nan), cmap=viz.SEQ, interpolation="nearest")
+    axes[0].set_title("Matrice d'adjacence W")
+    axes[0].grid(False)
+    fig.colorbar(im, ax=axes[0], shrink=0.8)
+    a = adj.copy()
+    np.fill_diagonal(a, 0)
+    axes[1].hist((a > 0).sum(1), bins=range(0, 30), color=viz.CAT[0], edgecolor=viz.SURFACE)
+    axes[1].set_title("Degré sortant")
+    axes[1].set_xlabel("Voisins (poids > 0)")
+    reach = [k_hop_reach(a, k) for k in range(1, 7)]
+    axes[2].boxplot(reach, tick_labels=range(1, 7), patch_artist=True,
+                    boxprops={"facecolor": viz.BLUE_RAMP[1], "color": viz.BLUE_RAMP[4]},
+                    medianprops={"color": viz.INK}, whiskerprops={"color": viz.AXIS},
+                    capprops={"color": viz.AXIS}, flierprops={"markeredgecolor": viz.MUTED})
+    axes[2].set_title("Champ réceptif d'une diffusion d'ordre K")
+    axes[2].set_xlabel("K (sauts)")
+    axes[2].set_ylabel("Nœuds atteints")
+    one_way = ((a > 0) & (a.T == 0)).sum() / (a > 0).sum()
+    fig.suptitle(f"Le graphe routier : creux ({(a > 0).mean() * 100:.1f} % d'arêtes), orienté "
+                 f"({one_way * 100:.0f} % des arêtes sans arête retour)", x=0.01, ha="left", fontweight="bold")
+    fig.tight_layout()
+    viz.save(fig, OUT / "eda_adjacency.png")
