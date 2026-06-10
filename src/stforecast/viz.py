@@ -28,3 +28,17 @@ MODEL_LABELS = {
     "gwnet_road": "GWNet (route)", "gwnet_adaptive": "GWNet (adaptative)",
     "gwnet_nograph": "GWNet sans graphe (TCN)",
 }
+
+
+def setup() -> None:
+    mpl.rcParams.update({
+        "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
+        "figure.dpi": 110, "savefig.dpi": 160, "savefig.bbox": "tight",
+        "font.size": 10, "axes.titlesize": 12, "axes.titleweight": "bold", "axes.titlelocation": "left",
+        "axes.labelcolor": INK2, "axes.edgecolor": AXIS, "axes.linewidth": 0.8,
+        "xtick.color": MUTED, "ytick.color": MUTED, "text.color": INK,
+        "axes.spines.top": False, "axes.spines.right": False,
+        "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.6,
+        "axes.axisbelow": True, "lines.linewidth": 2, "legend.frameon": False,
+        "axes.prop_cycle": mpl.cycler(color=CAT),
+    })
