@@ -147,3 +147,39 @@ def propagation(df, adj):
     ax.set_title(f"La congestion se propage vers l'amont ({len(best)} arêtes, Δvitesse corrélée)")
     viz.save(fig, OUT / "eda_propagation.png")
     return best
+
+
+def indistinguishability(df):
+    """Paires de fenêtres d'entrée quasi identiques mais aux futurs divergents."""
+    rng = np.random.default_rng(1)
+    v = df.to_numpy()
+    starts = make_windows(int(len(v) * 0.7))
+    n = 6000
+    t = rng.choice(starts, n)
+    s = rng.integers(0, v.shape[1], n)
+    xin = v[t[:, None] + np.arange(12), s[:, None]]
+    yout = v[t[:, None] + 12 + np.arange(12), s[:, None]]
+    ok = (xin > 0).all(1) & (yout > 0).all(1)
+    xin, yout, t, s = xin[ok], yout[ok], t[ok], s[ok]
+    d_in = np.sqrt(((xin[:, None] - xin[None]) ** 2).mean(-1))
+    d_out = np.abs(yout[:, None, -1] - yout[None, :, -1])
+    np.fill_diagonal(d_in, np.inf)
+    score = np.where(d_in < 0.8, d_out, -1)
+    i, j = np.unravel_index(np.argmax(score), score.shape)
+    idx = df.index
+    fig, ax = plt.subplots(figsize=(8, 3.8))
+    for k, c in [(i, viz.CAT[0]), (j, viz.CAT[1])]:
+        lab = f"capteur {df.columns[s[k]]}, {idx[t[k] + 11]:%a %H:%M}"
+        ax.plot(range(-11, 1), xin[k], color=c, marker="o", ms=4)
+        ax.plot(range(1, 13), yout[k], color=c, ls="--", label=lab)
+    ax.axvline(0.5, color=viz.AXIS, lw=1)
+    ax.text(-11, ax.get_ylim()[0] + 1, "1 h observée (identique)", color=viz.INK2)
+    ax.text(1.3, ax.get_ylim()[0] + 1, "1 h future (divergente)", color=viz.INK2)
+    ax.set_xlabel("Pas de 5 min")
+    ax.set_ylabel("Vitesse (mph)")
+    ax.legend(loc="upper left", bbox_to_anchor=(0, -0.18), ncol=2)
+    ax.set_title(f"Indistinguabilité : RMS d'entrée {d_in[i, j]:.2f} mph, écart à 60 min {d_out[i, j]:.0f} mph")
+    viz.save(fig, OUT / "concept_indistinguishability.png")
+    # Statistique globale : pour les paires d'entrées proches, dispersion des futurs.
+    close = d_in < 1.0
+    return float(np.median(d_out[close])), int(close.sum() // 2)
