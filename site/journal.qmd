@@ -76,3 +76,13 @@ et les écarts au plan dans les
 - Supports configurables (route, adaptative, les deux, aucun) pour l'ablation.
 - Test clé : sans graphe, perturber le capteur 0 ne change **rien** à la prédiction du
   capteur 1.
+
+## 10 juin 2026 — Graph WaveNet : exactement l'article, et une surprise
+
+- **2,69 / 3,07 / 3,53**, exactement les chiffres de l'article original.
+- Face à STID : −4 % de MAE à 15 min, mais **−0,1 % à 60 min**. Sous le seuil de 3 % du SPEC.
+- Surprise : le **MAPE** à 60 min baisse de 11 %. La ventilation par régime l'explique :
+  −23 % d'erreur en *début de congestion*, mais une erreur plus élevée en trafic fluide.
+  Le gain du graphe se cache dans les situations rares.
+- Ablation : sans graphe, Graph WaveNet tombe à 4,45, presque comme STID sans identités
+  (4,53). **Graphe et identités sont deux leviers substituables.**
