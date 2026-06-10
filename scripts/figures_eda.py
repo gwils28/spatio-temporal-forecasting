@@ -69,3 +69,22 @@ def daily_profile(df):
     ax.text(0.01, 0.02, "Ligne : moyenne réseau · bande : capteurs P10–P90", transform=ax.transAxes,
             color=viz.MUTED, fontsize=8)
     viz.save(fig, OUT / "eda_daily_profile.png")
+
+
+def missing(df):
+    miss = (df == 0)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 3.5), gridspec_kw={"width_ratios": [2, 1]})
+    daily = miss.resample("D").mean().mean(axis=1) * 100
+    axes[0].bar(daily.index, daily.to_numpy(), width=0.8, color=viz.CAT[0])
+    axes[0].set_ylabel("% de valeurs manquantes")
+    axes[0].set_title("Trous dans le temps (par jour)")
+    axes[0].tick_params(axis="x", rotation=30)
+    per = miss.mean().to_numpy() * 100
+    axes[1].hist(per, bins=30, color=viz.CAT[0], edgecolor=viz.SURFACE)
+    axes[1].set_xlabel("% manquant par capteur")
+    axes[1].set_ylabel("Capteurs")
+    axes[1].set_title("…et par capteur")
+    fig.suptitle(f"Données manquantes : {miss.to_numpy().mean() * 100:.1f} % des valeurs sont des zéros",
+                 x=0.01, ha="left", fontweight="bold")
+    fig.tight_layout()
+    viz.save(fig, OUT / "eda_missing.png")
