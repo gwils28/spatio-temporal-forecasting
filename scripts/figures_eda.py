@@ -201,3 +201,25 @@ def split_timeline(df):
     ax.spines["left"].set_visible(False)
     ax.set_title("Split chronologique 70 / 10 / 20 — nombre de fenêtres 12→12 par bloc")
     viz.save(fig, OUT / "eda_split.png")
+
+
+def main():
+    viz.setup()
+    OUT.mkdir(parents=True, exist_ok=True)
+    df = load_metr_la()
+    _, adj = load_adjacency()
+    loc = load_locations()
+    sensor_map(df, adj, loc)
+    speed_heatmap(df, adj)
+    daily_profile(df)
+    missing(df)
+    adjacency(adj)
+    best = propagation(df, adj)
+    med, npairs = indistinguishability(df)
+    split_timeline(df)
+    print(f"propagation : {len(best)} arêtes, lag médian {np.median(best) * 5:.0f} min")
+    print(f"indistinguabilité : {npairs} paires proches, écart médian à 60 min {med:.1f} mph")
+
+
+if __name__ == "__main__":
+    main()
