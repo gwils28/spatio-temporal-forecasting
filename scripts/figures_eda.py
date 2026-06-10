@@ -114,3 +114,36 @@ def adjacency(adj):
                  f"({one_way * 100:.0f} % des arêtes sans arête retour)", x=0.01, ha="left", fontweight="bold")
     fig.tight_layout()
     viz.save(fig, OUT / "eda_adjacency.png")
+
+
+def propagation(df, adj):
+    """Décalage de corrélation croisée amont→aval : la congestion se propage-t-elle ?"""
+    x = df.replace(0, np.nan).interpolate(limit_direction="both").to_numpy()
+    dx = np.diff(x, axis=0)
+    dx = (dx - dx.mean(0)) / (dx.std(0) + 1e-6)
+    a = adj.copy()
+    np.fill_diagonal(a, 0)
+    ii, jj = np.nonzero((a > 0.5) & (a.T < 0.1))  # arêtes nettement orientées
+    lags = np.arange(-6, 7)
+    best = []
+    for i, j in zip(ii, jj):
+        cc = [np.mean(dx[max(0, -k): len(dx) - max(0, k), i] * dx[max(0, k): len(dx) - max(0, -k), j])
+              for k in lags]
+        best.append(lags[int(np.argmax(cc))])
+    best = np.array(best)
+    fig, ax = plt.subplots(figsize=(8, 3.8))
+    counts = np.array([(best == k).sum() for k in lags])
+    colors = [viz.CAT[0] if k < 0 else viz.MUTED if k == 0 else viz.CAT[1] for k in lags]
+    ax.bar(lags * 5, counts, width=4, color=colors)
+    neg, pos = (best < 0).mean() * 100, (best > 0).mean() * 100
+    ax.annotate(f"{neg:.0f} % : l'aval ralentit d'abord\n(onde de congestion qui remonte)",
+                xy=(-7, counts[lags == -1][0] * 0.6), xytext=(-33, counts.max() * 0.55),
+                color=viz.INK2, arrowprops={"arrowstyle": "-", "color": viz.MUTED})
+    ax.annotate(f"{pos:.0f} % : l'amont d'abord", xy=(7, counts[lags == 1][0] + 2),
+                xytext=(12, counts.max() * 0.3), color=viz.INK2,
+                arrowprops={"arrowstyle": "-", "color": viz.MUTED})
+    ax.set_xlabel("Décalage du pic de corrélation, aval vs amont (minutes)")
+    ax.set_ylabel("Arêtes orientées")
+    ax.set_title(f"La congestion se propage vers l'amont ({len(best)} arêtes, Δvitesse corrélée)")
+    viz.save(fig, OUT / "eda_propagation.png")
+    return best
