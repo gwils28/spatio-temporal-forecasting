@@ -183,3 +183,21 @@ def indistinguishability(df):
     # Statistique globale : pour les paires d'entrées proches, dispersion des futurs.
     close = d_in < 1.0
     return float(np.median(d_out[close])), int(close.sum() // 2)
+
+
+def split_timeline(df):
+    splits = split_indices(make_windows(len(df)))
+    idx = df.index
+    fig, ax = plt.subplots(figsize=(9, 1.8))
+    for (name, st), c in zip(splits.items(), [viz.CAT[0], viz.CAT[3], viz.CAT[1]]):
+        a, b = idx[st[0]], idx[min(st[-1] + 23, len(idx) - 1)]
+        ax.barh(0, (b - a).days + 1, left=a, color=c, height=0.5, edgecolor=viz.SURFACE, lw=2)
+        ax.text(a + (b - a) / 2, 0, f"{name}\n{len(st):,}".replace(",", " "), ha="center", va="center",
+                color="#ffffff" if c != viz.CAT[3] else viz.INK, fontsize=9)
+    ax.set_yticks([])
+    ax.grid(False)
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    ax.spines["left"].set_visible(False)
+    ax.set_title("Split chronologique 70 / 10 / 20 — nombre de fenêtres 12→12 par bloc")
+    viz.save(fig, OUT / "eda_split.png")
