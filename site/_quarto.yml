@@ -1,0 +1,73 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - figures/
+
+lang: fr
+
+website:
+  title: "Le graphe mérite-t-il sa complexité ?"
+  description: "Veille & expérimentation : STID vs Graph WaveNet sur METR-LA, prévision spatio-temporelle pour la logistique."
+  site-url: https://gwils28.github.io/spatio-temporal-forecasting/
+  repo-url: https://github.com/gwils28/spatio-temporal-forecasting
+  repo-actions: [source, issue]
+  page-navigation: true
+  reader-mode: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Accueil
+      - text: Veille
+        menu:
+          - href: veille/foundation-models.qmd
+          - href: veille/stid.qmd
+          - href: veille/dcrnn.qmd
+      - text: Concepts
+        menu:
+          - href: concepts/graphe-hypothese.qmd
+          - href: concepts/indistinguabilite.qmd
+          - href: concepts/diffusion.qmd
+          - href: concepts/architectures.qmd
+      - text: Expérience
+        menu:
+          - href: experience/donnees.qmd
+          - href: experience/exploration.ipynb
+          - href: experience/protocole.qmd
+          - href: experience/resultats.qmd
+          - href: experience/ablations.qmd
+          - href: experience/couts.qmd
+      - href: system-design.qmd
+        text: System design
+      - href: journal.qmd
+        text: Journal
+    right:
+      - icon: github
+        href: https://github.com/gwils28/spatio-temporal-forecasting
+  sidebar:
+    - title: Veille
+      contents: [veille/foundation-models.qmd, veille/stid.qmd, veille/dcrnn.qmd]
+  page-footer:
+    left: "Wilson Goma · veille ML — prévision spatio-temporelle"
+    right: "Construit avec [Quarto](https://quarto.org)"
+
+format:
+  html:
+    theme:
+      light: [cosmo, styles/custom.scss]
+    toc: true
+    toc-depth: 3
+    toc-title: "Sur cette page"
+    number-sections: false
+    code-copy: true
+    fig-align: center
+    fig-cap-location: bottom
+    lightbox: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    callout-appearance: simple
+    mermaid:
+      theme: neutral
+
+execute:
+  enabled: false
