@@ -90,3 +90,14 @@ def timeline():
     ax.grid(False)
     ax.set_title("Prévision de trafic sur graphe : trois trajectoires de recherche")
     viz.save(fig, OUT / "concept_timeline.png")
+
+
+def main():
+    viz.setup()
+    OUT.mkdir(parents=True, exist_ok=True)
+    diffusion_maps()
+    timeline()
+
+
+if __name__ == "__main__":
+    main()
