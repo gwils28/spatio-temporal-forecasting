@@ -86,3 +86,13 @@ et les écarts au plan dans les
   Le gain du graphe se cache dans les situations rares.
 - Ablation : sans graphe, Graph WaveNet tombe à 4,45, presque comme STID sans identités
   (4,53). **Graphe et identités sont deux leviers substituables.**
+
+## 11 juin 2026 — Exploration : la congestion remonte le flux
+
+- Corrélation croisée des variations de vitesse sur les arêtes orientées : **31 %** ont un
+  pic où l'aval ralentit *avant* l'amont, contre 5 % dans l'autre sens. C'est l'onde de choc
+  de congestion, et la justification concrète de la diffusion amont de DCRNN.
+- 64 % des arêtes n'ont pas de décalage à 5 min de résolution : le voisin n'apporte pas
+  d'avance. Ça éclaire le gain modeste du graphe.
+- Première version de la figure trompeuse (le décalage 0 était coloré comme les décalages
+  négatifs), refaite.
