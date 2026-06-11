@@ -1,0 +1,8 @@
+---
+title: "Modèles de fondation spatio-temporels"
+subtitle: "Survey STFM (Liang et al., 2025) et UrbanFM (Chen et al., 2026) : la frontière du domaine"
+description: "Pré-entraîner une fois, transférer en zero/few-shot sur un nouveau réseau : où en est-on ?"
+categories: [veille, foundation models]
+---
+
+::: {.callout-note}
