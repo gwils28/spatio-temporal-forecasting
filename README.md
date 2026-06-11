@@ -36,3 +36,13 @@ make check                                # ruff + pytest
 uv run python scripts/eval_baselines.py   # moyenne historique, persistance
 make figures site                         # figures, tableaux, notebook, site
 ```
+
+## Site
+
+| Section | Contenu |
+|---|---|
+| Veille | survey des modèles de fondation ST, UrbanFM, STID, lecture DCRNN |
+| Concepts | le graphe-hypothèse, l'indistinguabilité des échantillons, la diffusion, les architectures |
+| Expérience | données, notebook d'exploration, protocole, résultats, ablations, coûts |
+| System design | prévision ST pour un réseau logistique : origine du graphe, échelle, robustesse |
+| Journal | déroulé daté du projet |
