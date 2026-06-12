@@ -11,3 +11,14 @@ On peut concevoir des modèles efficaces dès qu'on résout **l'indistinguabilit
 :::
 
 [arxiv.org/abs/2208.05233](https://arxiv.org/abs/2208.05233) · Shao, Zhang, Wang, Wei, Xu, CIKM 2022 (short paper).
+
+## Le diagnostic
+
+Entre 2018 et 2022, les STGNN se sont empilés : diffusion, attention, graphes appris,
+blocs récurrents et convolutifs. Les gains devenaient marginaux à chaque article. STID
+renverse la question : **qu'est-ce qui manque à un modèle simple pour bien prévoir ?**
+
+La réponse des auteurs : un modèle qui ne voit qu'une fenêtre de 12 valeurs **ne sait pas
+de quel capteur ni de quel moment elle vient**. Or deux fenêtres identiques peuvent
+précéder des futurs opposés. C'est l'**indistinguabilité des échantillons**, détaillée
+sur la page [Indistinguabilité](../concepts/indistinguabilite.qmd).
