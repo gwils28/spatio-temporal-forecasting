@@ -6,3 +6,11 @@ categories: [veille, foundation models]
 ---
 
 ::: {.callout-note}
+## En une phrase
+La recherche quitte le « un STGNN par jeu de données » pour des **modèles pré-entraînés
+sur des centaines de villes** et transférés à un réseau inconnu. Pour un réseau logistique
+qui ajoute des hubs chaque trimestre, c'est la promesse qui compte. Elle reste à
+valider sur *son* réseau.
+:::
+
+![Trois trajectoires de recherche. La branche « fondation » est la plus récente.](../figures/concept_timeline.png){#fig-timeline}
