@@ -1,0 +1,114 @@
+---
+title: "Modèles de fondation spatio-temporels"
+subtitle: "Survey STFM (Liang et al., 2025) et UrbanFM (Chen et al., 2026) : la frontière du domaine"
+description: "Pré-entraîner une fois, transférer en zero/few-shot sur un nouveau réseau : où en est-on ?"
+categories: [veille, foundation models]
+---
+
+::: {.callout-note}
+## En une phrase
+La recherche quitte le « un STGNN par jeu de données » pour des **modèles pré-entraînés
+sur des centaines de villes** et transférés à un réseau inconnu. Pour un réseau logistique
+qui ajoute des hubs chaque trimestre, c'est la promesse qui compte. Elle reste à
+valider sur *son* réseau.
+:::
+
+![Trois trajectoires de recherche. La branche « fondation » est la plus récente.](../figures/concept_timeline.png){#fig-timeline}
+
+## 1. Le survey : *Foundation Models for Spatio-Temporal Data Science*
+
+**Liang, Wen, Xia, Jin, Yang, Salim, Wen, Pan, Cong**, arXiv:2503.13502 (mars 2025).
+[arxiv.org/abs/2503.13502](https://arxiv.org/abs/2503.13502)
+
+### La thèse
+
+Les modèles spatio-temporels profonds (dont tous les STGNN) sont **spécifiques à une
+tâche** et **gourmands en données étiquetées**. Les auteurs proposent le cadre des
+*Spatio-Temporal Foundation Models* (STFM). Ces modèles couvrent tout le flux de travail,
+et pas seulement l'étape de modélisation.
+
+```{mermaid}
+flowchart LR
+  A["Sensing<br/>capteurs réels,<br/>données synthétiques"] --> B["Management<br/>nettoyage, requête,<br/>intégration"]
+  B --> C["Mining<br/>perception, optimisation,<br/>raisonnement"]
+  C --> D["Applications<br/>prévision · imputation · anomalies<br/>what happened / what if"]
+  style C fill:#cde2fb,stroke:#256abf
+```
+
+### La taxonomie (deux axes)
+
+| Axe | Branches | Exemples cités |
+|---|---|---|
+| **Workflow** | sensing → management → mining → applications | UrbanCLIP, UrbanGPT, Pangu |
+| **Méthodologie : LLM** | zero-shot (prompting, agents), fine-tuning supervisé | UrbanGPT, TrafficGPT |
+| **Méthodologie : PFM** | modèles pré-entraînés *from scratch* : architecture, schéma de pré-entraînement, modalité | **STEP**, **GPT-ST**, **OpenCity**, UniST |
+
+: Taxonomie du survey STFM (source : texte de l'article, sections 3-4). {tbl-colwidths="[22,40,38]"}
+
+Les familles qui touchent directement notre tâche (prévision sur réseau de capteurs) :
+
+- **STEP** et **GPT-ST** : *pré-entraînement agnostique au domaine* sur l'historique long
+  des séries, puis branchement sur un prévisionniste en aval.
+- **OpenCity** et **TFM** : modèles de fondation **à base de graphe** pour le transport.
+  Les résultats en prévision de trafic sont prometteurs.
+- **UniST** : un modèle « one-for-all » pour les données urbaines, surtout routières.
+
+## 2. UrbanFM : passer à l'échelle
+
+**Chen, Wu, Chen, Zhou, Liang** (HKUST(GZ)), arXiv:2602.20677, v1 du 24 février 2026.
+[arxiv.org/abs/2602.20677](https://arxiv.org/abs/2602.20677)
+
+UrbanFM part du constat que les modèles urbains actuels sont **sur-ajustés à un
+scénario**, c'est-à-dire à une ville ou une tâche. Il attaque le passage à l'échelle selon
+trois axes :
+
+```{mermaid}
+flowchart TB
+  subgraph D["① Données : WorldST"]
+    d1["> 1 milliard de points<br/>100+ villes, 8 domaines<br/>flux, vitesses… standardisés"]
+  end
+  subgraph C["② Calcul : MiniST"]
+    c1["découpe des champs ST<br/>(grille ou capteurs)<br/>KD-tree à capacité fixe → patchs"]
+  end
+  subgraph A["③ Architecture : UrbanFM"]
+    a1["self-attention minimaliste<br/>temps puis espace<br/>RoPE spatial + temporel, RevIN"]
+  end
+  D --> C --> A --> E["EvalST : zero-shot / few-shot<br/>sur villes et tâches inconnues"]
+```
+
+**Ce qui est vérifié dans le texte :** le corpus WorldST (plus d'un milliard de points,
+plus de 100 villes), le découpage MiniST, l'attention factorisée avec RoPE et
+l'objectif génératif à futur masqué.
+
+**Ce qui est annoncé, à vérifier dans le PDF avant de le citer :** un gain de 39 % à 70 %
+en zero-shot face aux modèles de fondation existants, et en few-shot (10 % des données)
+des performances supérieures aux modèles experts entraînés sur 100 %. METR-LA et PEMS-BAY
+font partie du benchmark EvalST.
+
+::: {.callout-warning}
+## Lecture critique
+- **Biais inductifs minimaux.** UrbanFM n'utilise **pas de graphe routier**. La structure
+  spatiale est apprise par l'attention sur des patchs. C'est le même pari que STID et
+  l'adjacence adaptative : *la topologie se déduit des données*.
+- **Coût.** Le pré-entraînement est hors de portée d'une équipe produit. La question
+  devient « fine-tuner ou utiliser un modèle publié », plus « entraîner ».
+- **Benchmarks.** Les gains annoncés portent sur des agrégats multi-villes. Sur *un*
+  réseau avec un historique riche, un modèle expert léger (STID) reste un baseline à battre.
+:::
+
+## 3. Ce que j'en retiens pour un réseau logistique
+
+| Situation | Option raisonnable | Pourquoi |
+|---|---|---|
+| Réseau stable, historique ≥ 3 mois par nœud | **STID** (ou STGNN si l'ablation le justifie) | rapide, précis, peu coûteux ; voir [résultats](../experience/resultats.qmd) |
+| Nouveau hub / nouvelle région sans historique | **FM pré-entraîné en zero-shot**, puis bascule vers un expert | l'embedding d'identité STID n'existe pas pour un nœud nouveau |
+| Peu de données partout (démarrage) | **FM en few-shot** | c'est précisément le régime ciblé par UrbanFM |
+| Contraintes de latence très dures (dispatch) | expert compact distillé | l'attention à l'échelle de la ville coûte cher en inférence |
+
+: Arbre de décision issu de la veille et de notre expérience. Développé dans [System design](../system-design.qmd).
+
+## Références
+
+- Liang Y. et al. (2025). *Foundation Models for Spatio-Temporal Data Science: A Tutorial and Survey.* arXiv:2503.13502.
+- Chen W., Wu Y., Chen J., Zhou X., Liang Y. (2026). *UrbanFM: Scaling Urban Spatio-Temporal Foundation Models.* arXiv:2602.20677.
+- Fiches de lecture détaillées : [`docs/notes/veille_fiches.md`](https://github.com/gwils28/spatio-temporal-forecasting/blob/main/docs/notes/veille_fiches.md).

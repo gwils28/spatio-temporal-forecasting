@@ -1,0 +1,89 @@
+---
+title: "STID : le baseline qui dérange"
+subtitle: "Shao et al., *Spatial-Temporal Identity: A Simple yet Effective Baseline*, CIKM 2022"
+categories: [veille, baseline]
+---
+
+::: {.callout-tip}
+## La phrase à retenir
+On peut concevoir des modèles efficaces dès qu'on résout **l'indistinguabilité des
+échantillons**, sans être limité aux STGNN.
+:::
+
+[arxiv.org/abs/2208.05233](https://arxiv.org/abs/2208.05233) · Shao, Zhang, Wang, Wei, Xu, CIKM 2022 (short paper).
+
+## Le diagnostic
+
+Entre 2018 et 2022, les STGNN se sont empilés : diffusion, attention, graphes appris,
+blocs récurrents et convolutifs. Les gains devenaient marginaux à chaque article. STID
+renverse la question : **qu'est-ce qui manque à un modèle simple pour bien prévoir ?**
+
+La réponse des auteurs : un modèle qui ne voit qu'une fenêtre de 12 valeurs **ne sait pas
+de quel capteur ni de quel moment elle vient**. Or deux fenêtres identiques peuvent
+précéder des futurs opposés. C'est l'**indistinguabilité des échantillons**, détaillée
+sur la page [Indistinguabilité](../concepts/indistinguabilite.qmd).
+
+## Le modèle
+
+```{mermaid}
+flowchart LR
+  X["Fenêtre X<br/>12 pas × C"] --> FC["FC embedding<br/>→ D=32"]
+  N["Identité spatiale<br/>E ∈ R^(N×32)"] --> CAT
+  T["Identité heure<br/>T_TiD ∈ R^(288×32)"] --> CAT
+  W["Identité jour<br/>T_DiW ∈ R^(7×32)"] --> CAT
+  FC --> CAT(("‖ concat<br/>4D = 128"))
+  CAT --> M1["MLP résiduel"] --> M2["MLP résiduel"] --> M3["MLP résiduel"]
+  M3 --> R["Régression<br/>→ 12 pas"]
+  style N fill:#cde2fb,stroke:#256abf
+  style T fill:#cde2fb,stroke:#256abf
+  style W fill:#cde2fb,stroke:#256abf
+```
+
+En équations (notations de l'article) :
+
+$$
+Z^{0} = \mathrm{FC}(X) \,\|\, E_{n} \,\|\, T^{TiD}_{t} \,\|\, T^{DiW}_{t} \in \mathbb{R}^{4D},
+\qquad
+Z^{l+1} = \mathrm{FC}_2\big(\sigma(\mathrm{FC}_1(Z^{l}))\big) + Z^{l},
+\qquad
+\hat{Y} = \mathrm{FC}_{reg}(Z^{L})
+$$
+
+Hyperparamètres de l'article : $D = 32$, $L = 3$ couches, $P = F = 12$, perte MAE, Adam
+avec $\text{lr} = 10^{-3}$. **Aucune matrice d'adjacence.** Chaque capteur est traité
+indépendamment, et seule son identité apprise le situe.
+
+## Les résultats publiés
+
+L'article évalue PEMS04/07/08, PEMS-BAY et Electricity. **METR-LA n'y figure pas.** Les
+chiffres STID sur METR-LA qui circulent viennent de la boîte à outils
+[BasicTS](https://github.com/GestaltCogTeam/BasicTS) des mêmes auteurs. C'est l'un des
+intérêts de notre [expérience](../experience/resultats.qmd) : les reproduire nous-mêmes.
+
+| PEMS-BAY, MAE | 15 min | 30 min | 60 min | s / époque |
+|---|---|---|---|---|
+| DCRNN | 1.31 | 1.67 | 1.99 | 351.4 |
+| Graph WaveNet | **1.30** | 1.63 | 1.95 | 112.0 |
+| **STID** | **1.30** | **1.62** | **1.89** | **15.8** |
+
+: Extrait des tableaux 3 et 4 de l'article (MAE en mph ; temps par époque sur RTX 2080Ti). {#tbl-stid-paper}
+
+Le rapport précision / coût est frappant : **STID égale ou bat Graph WaveNet à chaque
+horizon, pour un temps d'entraînement par époque environ 7 fois plus court.**
+
+L'ablation de l'article sur PEMS04 classe les identités : **l'identité spatiale est la plus
+importante**, et les identités temporelles apportent un gain plus modeste. Nous
+reproduisons cette ablation sur METR-LA ([Ablations](../experience/ablations.qmd)).
+
+## Lecture critique
+
+- **Pourquoi ça marche.** L'embedding de nœud est une *table de correspondance apprise*.
+  Avec quatre mois d'historique par capteur, il encode ce qu'un graphe aurait apporté :
+  le profil du capteur, sa propension à congestionner et sa similarité avec d'autres
+  capteurs.
+- **Où ça casse.** Un **nœud nouveau** n'a pas d'embedding. STID est *transductif* : il ne
+  généralise pas à une topologie qui change sans réentraînement. Un STGNN inductif
+  (diffusion sur l'adjacence routière) peut, en principe, servir un nœud neuf à partir
+  de ses voisins.
+- **Ce que ça change pour la pratique.** Avant tout STGNN, entraîner un STID. Ça prend
+  quelques minutes et ça fixe la barre.
