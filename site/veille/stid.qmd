@@ -1,0 +1,7 @@
+---
+title: "STID : le baseline qui dérange"
+subtitle: "Shao et al., *Spatial-Temporal Identity: A Simple yet Effective Baseline*, CIKM 2022"
+categories: [veille, baseline]
+---
+
+::: {.callout-tip}
