@@ -1,0 +1,9 @@
+---
+title: "Lecture : DCRNN (ICLR 2018)"
+subtitle: "Li, Yu, Shahabi & Liu, *Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting*"
+categories: [veille, lecture, STGNN]
+---
+
+[arxiv.org/abs/1707.01926](https://arxiv.org/abs/1707.01926) · code et données : [github.com/liyaguang/DCRNN](https://github.com/liyaguang/DCRNN)
+
+::: {.callout-note}
