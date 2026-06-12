@@ -7,3 +7,8 @@ categories: [veille, lecture, STGNN]
 [arxiv.org/abs/1707.01926](https://arxiv.org/abs/1707.01926) · code et données : [github.com/liyaguang/DCRNN](https://github.com/liyaguang/DCRNN)
 
 ::: {.callout-note}
+## Pourquoi ce papier
+C'est le texte fondateur du domaine **et** celui de nos données : METR-LA, l'adjacence
+`adj_mx.pkl` et le protocole 70/10/20 avec métriques masquées viennent de ce dépôt.
+Tous les STGNN ultérieurs s'y comparent.
+:::
