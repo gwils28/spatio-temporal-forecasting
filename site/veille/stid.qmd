@@ -5,3 +5,9 @@ categories: [veille, baseline]
 ---
 
 ::: {.callout-tip}
+## La phrase à retenir
+On peut concevoir des modèles efficaces dès qu'on résout **l'indistinguabilité des
+échantillons**, sans être limité aux STGNN.
+:::
+
+[arxiv.org/abs/2208.05233](https://arxiv.org/abs/2208.05233) · Shao, Zhang, Wang, Wei, Xu, CIKM 2022 (short paper).
