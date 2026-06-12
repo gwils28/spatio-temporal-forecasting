@@ -12,3 +12,12 @@ C'est le texte fondateur du domaine **et** celui de nos données : METR-LA, l'ad
 `adj_mx.pkl` et le protocole 70/10/20 avec métriques masquées viennent de ce dépôt.
 Tous les STGNN ultérieurs s'y comparent.
 :::
+
+## 1. Le problème posé
+
+Prévoir le trafic est difficile pour trois raisons :
+
+1. **dépendance spatiale complexe** sur un réseau routier **orienté** : ce qui se passe en
+   aval n'affecte pas l'amont de la même façon ;
+2. **dynamique temporelle non linéaire** (pointes, incidents) ;
+3. **horizons longs**, où les erreurs s'accumulent.
