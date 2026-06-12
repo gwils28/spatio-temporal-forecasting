@@ -44,3 +44,64 @@ $$
 Pourquoi deux directions ? Notre [exploration](../experience/donnees.qmd) le montre : les
 **ondes de congestion remontent le flux**. L'aval ralentit avant l'amont sur près d'un
 tiers des arêtes orientées. Un filtre à une seule direction raterait ce signal.
+
+## 3. DCGRU et encodeur-décodeur
+
+Les produits matriciels d'une cellule GRU sont remplacés par la convolution par
+diffusion :
+
+$$
+\begin{aligned}
+r^{(t)} &= \sigma\big(\Theta_r \star_{\mathcal{G}} [X^{(t)}, H^{(t-1)}] + b_r\big) \\
+u^{(t)} &= \sigma\big(\Theta_u \star_{\mathcal{G}} [X^{(t)}, H^{(t-1)}] + b_u\big) \\
+C^{(t)} &= \tanh\big(\Theta_C \star_{\mathcal{G}} [X^{(t)}, (r^{(t)} \odot H^{(t-1)})] + b_c\big) \\
+H^{(t)} &= u^{(t)} \odot H^{(t-1)} + (1 - u^{(t)}) \odot C^{(t)}
+\end{aligned}
+$$
+
+```{mermaid}
+flowchart LR
+  subgraph ENC["Encodeur (DCGRU ×2 couches)"]
+    x1["X t-11"] --> x2["…"] --> x3["X t"]
+  end
+  subgraph DEC["Décodeur (DCGRU ×2 couches)"]
+    y1["Ŷ t+1"] --> y2["…"] --> y3["Ŷ t+12"]
+  end
+  x3 -- "état caché" --> y1
+  y1 -. "scheduled sampling :<br/>vérité terrain (proba ε_i ↓)<br/>ou propre prédiction" .-> y2
+```
+
+Le **scheduled sampling** sert à l'entraînement. Le décodeur reçoit la vérité terrain avec
+une probabilité $\varepsilon_i$ qui décroît vers 0. Il apprend ainsi progressivement à
+consommer ses propres prédictions, comme en inférence.
+
+## 4. Résultats METR-LA (tableau 1 de l'article)
+
+| Horizon | Moyenne hist. | FC-LSTM | **DCRNN** |
+|---|---|---|---|
+| 15 min | 4.16 / 7.80 / 13.0 % | 3.44 / 6.30 / 9.6 % | **2.77 / 5.38 / 7.3 %** |
+| 30 min | 4.16 / 7.80 / 13.0 % | 3.77 / 7.23 / 10.9 % | **3.15 / 6.45 / 8.8 %** |
+| 60 min | 4.16 / 7.80 / 13.0 % | 4.37 / 8.69 / 13.2 % | **3.60 / 7.59 / 10.5 %** |
+
+: MAE / RMSE / MAPE. Notre moyenne historique reproduit 4.19 de MAE, ce qui valide le protocole. {#tbl-dcrnn}
+
+**Ablations de l'article :** sans convolution par diffusion, l'erreur de validation est
+nettement plus haute. La version **bidirectionnelle** bat l'unidirectionnelle. Seq2seq et
+scheduled sampling améliorent chacun le modèle précédent.
+
+## 5. Ce qui a vieilli, ce qui reste
+
+| Reste vrai | A vieilli |
+|---|---|
+| La congestion est un phénomène **orienté** : les marches avant/arrière comptent | La récurrence (DCGRU) est **lente** : 351 s/époque sur PEMS-BAY contre 16 s pour STID |
+| Le protocole masqué 70/10/20 est devenu **le** standard | Le graphe prédéfini n'est plus jugé indispensable : graphes appris (Graph WaveNet, AGCRN), ou pas de graphe du tout (STID) |
+| Comparer à des baselines non-graphe (FC-LSTM) | Le scheduled sampling est délicat à régler ; les décodeurs non autorégressifs dominent |
+
+## 6. Ce que j'en tire pour ce projet
+
+- Je garde **la diffusion bidirectionnelle** : c'est le support « route » de Graph WaveNet
+  (`stforecast.graph.double_transition`).
+- Je remplace la récurrence par la convolution temporelle dilatée de Graph WaveNet :
+  même idée spatiale, coût bien moindre. C'est le choix de cadrage (voir `SPEC.md`).
+- Je reprends l'esprit de l'article : **toujours montrer un baseline non-graphe**. Avec
+  STID, il est beaucoup plus fort que le FC-LSTM de 2018.
