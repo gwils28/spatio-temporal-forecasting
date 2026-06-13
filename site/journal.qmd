@@ -96,3 +96,9 @@ et les écarts au plan dans les
   d'avance. Ça éclaire le gain modeste du graphe.
 - Première version de la figure trompeuse (le décalage 0 était coloré comme les décalages
   négatifs), refaite.
+
+## 13 juin 2026 — Pages de veille
+
+- Survey STFM : taxonomie workflow × méthodologie, et les familles STEP, GPT-ST, OpenCity.
+- UrbanFM : vérifié dans le texte (WorldST, MiniST, attention factorisée). Les gains
+  zero-shot chiffrés sont marqués « à confirmer », car issus d'un résumé.
