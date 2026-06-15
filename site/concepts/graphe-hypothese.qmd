@@ -19,3 +19,9 @@ définir « voisin », puis vérifier que l'hypothèse rapporte plus qu'elle ne 
 | **Appris** (adaptatif) | $\tilde{A} = \mathrm{softmax}(\mathrm{ReLU}(E_1 E_2))$ entraîné de bout en bout | aucun a priori, s'adapte | opaque ; transductif ; peut apprendre du bruit |
 
 : Les sources d'adjacence. Graph WaveNet combine les deux dernières lignes « route » et « appris ». {tbl-colwidths="[15,30,27,28]"}
+
+## Le graphe de METR-LA
+
+![Carte des capteurs et arêtes routières. Les points sombres sont lents en moyenne, donc des zones de congestion récurrente.](../figures/eda_sensor_map.png){#fig-map}
+
+![Le graphe est creux, orienté, et une diffusion d'ordre K = 2 atteint déjà une vingtaine de nœuds.](../figures/eda_adjacency.png){#fig-adj}
