@@ -8,3 +8,14 @@ categories: [concepts]
 Un STGNN suppose que *l'état des voisins aide à prévoir l'état d'un nœud*. Encore faut-il
 définir « voisin », puis vérifier que l'hypothèse rapporte plus qu'elle ne coûte.
 :::
+
+## Quatre façons de fabriquer un graphe
+
+| Source | Construction | Forces | Faiblesses |
+|---|---|---|---|
+| **Géographique** | distance euclidienne entre capteurs | trivial, disponible partout | deux voies parallèles en sens opposé sont « voisines » à tort |
+| **Réseau routier** (METR-LA) | distance *sur la route*, noyau gaussien seuillé, **orienté** | encode le sens de circulation | demande un graphe routier propre ; figé |
+| **Corrélation** | similarité des séries historiques | capture des liens non géographiques | dérivé des données : fuite possible si mal splitté |
+| **Appris** (adaptatif) | $\tilde{A} = \mathrm{softmax}(\mathrm{ReLU}(E_1 E_2))$ entraîné de bout en bout | aucun a priori, s'adapte | opaque ; transductif ; peut apprendre du bruit |
+
+: Les sources d'adjacence. Graph WaveNet combine les deux dernières lignes « route » et « appris ». {tbl-colwidths="[15,30,27,28]"}
