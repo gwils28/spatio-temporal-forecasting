@@ -7,3 +7,21 @@ categories: [concepts, modèles]
 Les deux modèles sont **réécrits en PyTorch pur** (environ 100 et 150 lignes) dans
 `src/stforecast/models/`, avec les hyperparamètres de leurs articles et de BasicTS.
 Ce choix de cadrage privilégie la lisibilité et les tests plutôt qu'une boîte noire.
+
+## STID
+
+```{mermaid}
+flowchart LR
+  X["X : (B, 12, N, 3)<br/>vitesse z-score,<br/>heure, jour"] --> E["Conv 1×1<br/>36 → 32"]
+  E --> C(("‖"))
+  NE["E_node[n]<br/>207 × 32"] --> C
+  TE["T_tod[t]<br/>288 × 32"] --> C
+  DE["T_dow[t]<br/>7 × 32"] --> C
+  C --> M["3 × MLP résiduel<br/>128 → 128"]
+  M --> R["Conv 1×1<br/>128 → 12"]
+  R --> Y["Ŷ : (B, 12, N)"]
+```
+
+- **118 k paramètres**, dont 6,6 k pour l'identité spatiale et 9,2 k pour l'heure.
+- Chaque nœud est prédit **indépendamment**. Aucune information ne circule entre capteurs.
+- Les identités temporelles sont lues au **dernier pas observé**.
