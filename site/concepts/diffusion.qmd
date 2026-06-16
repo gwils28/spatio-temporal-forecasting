@@ -23,3 +23,44 @@ $$
 - $k = 2$ : voisins de voisins, etc.
 
 ![Impulsion unitaire diffusée sur le graphe METR-LA. En haut vers l'aval, en bas vers l'amont.](../figures/concept_diffusion.png){#fig-diffusion}
+
+## Dans le code
+
+L'implémentation tient en quelques lignes (`src/stforecast/models/gwnet.py`) :
+
+```python
+def nconv(x, a):
+    # x : (B, C, N, T) ; a : (N, N)  →  Σ_v x[..., v, :] · a[v, w]
+    return torch.einsum("ncvl,vw->ncwl", x, a)
+
+class DiffusionGCN(nn.Module):
+    def forward(self, x, supports):
+        out = [x]                       # k = 0
+        for a in supports:              # P_f, P_b, (Ã adaptative)
+            x1 = nconv(x, a); out.append(x1)          # k = 1
+            for _ in range(2, self.order + 1):
+                x1 = nconv(x1, a); out.append(x1)     # k = 2..K
+        return self.mlp(torch.cat(out, dim=1))        # Θ : conv 1×1
+```
+
+## Champ réceptif
+
+Avec $K = 2$ (Graph WaveNet) et 8 couches empilées, l'information peut voyager jusqu'à
+16 sauts. En pratique, l'essentiel du signal vient des 1-2 premiers sauts.
+
+![Nombre de nœuds atteints en K sauts (panneau de droite).](../figures/eda_adjacency.png){#fig-reach}
+
+## Adjacence adaptative
+
+Graph WaveNet ajoute un support **appris** :
+
+$$
+\tilde{A} = \mathrm{softmax}\big(\mathrm{ReLU}(E_1 E_2^\top)\big), \qquad E_1, E_2 \in \mathbb{R}^{N \times 10}
+$$
+
+Ce sont deux embeddings de nœuds de dimension 10, initialisés au hasard. **C'est
+conceptuellement très proche de l'identité spatiale de STID** : dans les deux cas, on
+apprend un vecteur par nœud. La différence est son usage. Dans Graph WaveNet, il sert à
+*router l'information entre nœuds* ; dans STID, il *conditionne la prédiction du nœud*.
+Nous comparons la matrice apprise à la matrice routière sur la page
+[Ablations](../experience/ablations.qmd).
