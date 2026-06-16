@@ -1,0 +1,5 @@
+---
+title: "Convolution par diffusion, pas à pas"
+subtitle: "Ce que calcule réellement une couche de DCRNN / Graph WaveNet"
+categories: [concepts]
+---
