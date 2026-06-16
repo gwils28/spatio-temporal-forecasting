@@ -25,3 +25,46 @@ flowchart LR
 - **118 k paramètres**, dont 6,6 k pour l'identité spatiale et 9,2 k pour l'heure.
 - Chaque nœud est prédit **indépendamment**. Aucune information ne circule entre capteurs.
 - Les identités temporelles sont lues au **dernier pas observé**.
+
+## Graph WaveNet
+
+```{mermaid}
+flowchart TB
+  X["X : (B, C=2, N, 13)"] --> S["start conv 1×1 → 32"]
+  S --> B1
+  subgraph B1["× 8 couches (4 blocs × 2, dilatation 1, 2)"]
+    direction LR
+    F["TCN dilaté<br/>tanh"] --> G(("⊙"))
+    Ga["TCN dilaté<br/>sigmoïde"] --> G
+    G --> GC["Diffusion GCN<br/>supports : P_f, P_b, Ã"]
+    G --> SK["skip 1×1 → 256"]
+    GC --> RS["+ résiduel, BatchNorm"]
+  end
+  B1 --> SUM["Σ skips"] --> E1["ReLU, 1×1 → 512"] --> E2["1×1 → 12"]
+  E2 --> Y["Ŷ : (B, 12, N)"]
+```
+
+- **301 k paramètres** (version complète).
+- Champ réceptif temporel de 13 pas : l'entrée de 12 pas est complétée par un zéro à gauche.
+- Trois variantes de graphe sont comparées, plus une sans graphe (TCN pur, la diffusion
+  étant remplacée par une conv 1×1) : voir [Ablations](../experience/ablations.qmd).
+
+## Comparaison structurelle
+
+| | STID | Graph WaveNet |
+|---|---|---|
+| Mélange spatial | aucun (identité de nœud) | diffusion sur 2-3 supports, 8 couches |
+| Mélange temporel | MLP sur la fenêtre aplatie | convolutions causales dilatées à porte |
+| A priori sur le réseau | aucun | adjacence routière (optionnelle) + apprise |
+| Nœud nouveau | **impossible sans réentraînement** | possible via la route (inductif partiel) |
+| Complexité par pas | $\mathcal{O}(N \cdot D^2)$ | $\mathcal{O}(N^2 \cdot C)$ avec l'adaptative dense |
+| Tests unitaires | formes, ablations, brisure de symétrie | formes, ×4 variantes, absence de mélange sans graphe |
+
+: Ce qui distingue les deux familles. {#tbl-archi}
+
+::: {.callout-tip}
+## Test qui fixe l'intuition
+`tests/test_models.py::test_stid_node_identity_breaks_symmetry` donne la même fenêtre à
+deux capteurs. Sans identité, STID prédit la même chose pour les deux. Avec identité,
+les prédictions diffèrent. C'est l'indistinguabilité réduite à un test unitaire.
+:::
