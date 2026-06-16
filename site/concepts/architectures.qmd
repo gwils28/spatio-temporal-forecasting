@@ -1,0 +1,9 @@
+---
+title: "Les deux architectures comparées"
+subtitle: "STID (sans graphe) et Graph WaveNet (STGNN), tels qu'implémentés ici"
+categories: [concepts, modèles]
+---
+
+Les deux modèles sont **réécrits en PyTorch pur** (environ 100 et 150 lignes) dans
+`src/stforecast/models/`, avec les hyperparamètres de leurs articles et de BasicTS.
+Ce choix de cadrage privilégie la lisibilité et les tests plutôt qu'une boîte noire.
