@@ -102,3 +102,9 @@ et les écarts au plan dans les
 - Survey STFM : taxonomie workflow × méthodologie, et les familles STEP, GPT-ST, OpenCity.
 - UrbanFM : vérifié dans le texte (WorldST, MiniST, attention factorisée). Les gains
   zero-shot chiffrés sont marqués « à confirmer », car issus d'un résumé.
+
+## 18 juin 2026 — Pages concepts
+
+- Figure de diffusion d'une impulsion sur le **vrai** graphe METR-LA, en aval et en amont.
+- Page indistinguabilité : 5,4 % des paires de fenêtres jumelles divergent de plus de
+  10 mph à 60 min.
