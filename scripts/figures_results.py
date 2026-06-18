@@ -17,3 +17,8 @@ L = viz.MODEL_LABELS
 MAIN = ["ha", "last_value", "stid", "gwnet"]
 STID_ABL = ["stid", "stid_no_time", "stid_no_node", "stid_no_ids"]
 GW_ABL = ["gwnet", "gwnet_road", "gwnet_adaptive", "gwnet_nograph"]
+
+
+def load(name, kind="metrics"):
+    p = RES / name / f"{kind}.json"
+    return json.loads(p.read_text()) if p.exists() else None
