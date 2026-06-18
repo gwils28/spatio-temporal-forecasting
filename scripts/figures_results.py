@@ -65,3 +65,23 @@ def cost_table(names, path):
     path.write_text(head + "\n".join(rows) + f"\n\n: Coûts mesurés sur {ref['device']} (deux entraînements "
                     "en parallèle sur le GPU, donc temps absolus pessimistes ; les ratios sont comparables). "
                     "{#tbl-" + path.stem + "}\n")
+
+
+# ---------------------------------------------------------------- figures
+def horizon_curve(names):
+    fig, ax = plt.subplots(figsize=(8, 4.2))
+    ends = []
+    for n in names:
+        mae = [s["mae"] for s in load(n)["per_step"]]
+        x = np.arange(1, 13) * 5
+        style = {"ls": "--"} if n in ("ha", "last_value") else {}
+        ax.plot(x, mae, color=viz.MODEL_COLORS[n], marker="o", ms=4, **style)
+        ends.append(mae[-1])
+    for n, y in zip(names, viz.spread_labels(ends, 0.17)):
+        ax.text(62, y, L[n], color=viz.INK2, va="center", fontsize=9)
+    ax.set_xlim(3, 82)
+    ax.set_xticks([5, 15, 30, 45, 60])
+    ax.set_xlabel("Horizon (minutes)")
+    ax.set_ylabel("MAE (mph)")
+    ax.set_title("L'erreur croît avec l'horizon ; l'écart STID / GWNet reste faible")
+    viz.save(fig, OUT / "results_horizon.png")
