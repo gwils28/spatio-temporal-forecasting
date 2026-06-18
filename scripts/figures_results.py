@@ -26,3 +26,26 @@ def load(name, kind="metrics"):
 
 def available(names):
     return [n for n in names if load(n)]
+
+
+# ---------------------------------------------------------------- tableaux
+def metric_table(names, path):
+    rows = []
+    best = {}
+    for h in ["15min", "30min", "60min", "avg"]:
+        for k in ["mae", "rmse", "mape"]:
+            best[(h, k)] = min(load(n)[h][k] for n in names)
+    for n in names:
+        m = load(n)
+        cells = []
+        for h in ["15min", "30min", "60min", "avg"]:
+            vals = []
+            for k in ["mae", "rmse", "mape"]:
+                v = m[h][k]
+                s = f"{v:.2f}" + (" %" if k == "mape" else "")
+                vals.append(f"**{s}**" if abs(v - best[(h, k)]) < 1e-9 else s)
+            cells.append(" / ".join(vals))
+        rows.append(f"| {L[n]} | " + " | ".join(cells) + " |")
+    head = "| Modèle | 15 min | 30 min | 60 min | Moyenne 12 pas |\n|---|---|---|---|---|\n"
+    path.write_text(head + "\n".join(rows) + "\n\n: MAE / RMSE / MAPE sur le test (mph). Gras : meilleur. "
+                    "Généré par `scripts/figures_results.py`. {#tbl-" + path.stem + "}\n")
