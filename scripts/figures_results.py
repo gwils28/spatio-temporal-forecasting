@@ -22,3 +22,7 @@ GW_ABL = ["gwnet", "gwnet_road", "gwnet_adaptive", "gwnet_nograph"]
 def load(name, kind="metrics"):
     p = RES / name / f"{kind}.json"
     return json.loads(p.read_text()) if p.exists() else None
+
+
+def available(names):
+    return [n for n in names if load(n)]
