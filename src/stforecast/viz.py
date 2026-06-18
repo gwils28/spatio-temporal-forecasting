@@ -58,3 +58,13 @@ def spread_labels(values, min_gap):
         pos[i] = max(values[i], last + min_gap)
         last = pos[i]
     return pos
+
+
+def plain_log_ticks(ax, axis="x"):
+    """Graduations lisibles (1, 2, 5, 10…) sur un axe logarithmique."""
+    from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter
+
+    a = ax.xaxis if axis == "x" else ax.yaxis
+    a.set_major_locator(LogLocator(base=10, subs=(1, 2, 5)))
+    a.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}"))
+    a.set_minor_formatter(NullFormatter())
