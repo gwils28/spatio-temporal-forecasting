@@ -85,3 +85,23 @@ def horizon_curve(names):
     ax.set_ylabel("MAE (mph)")
     ax.set_title("L'erreur croît avec l'horizon ; l'écart STID / GWNet reste faible")
     viz.save(fig, OUT / "results_horizon.png")
+
+
+def horizon_zoom(names):
+    """Zoom STID vs GWNet : gain relatif par pas."""
+    s = np.array([x["mae"] for x in load("stid")["per_step"]])
+    fig, ax = plt.subplots(figsize=(8, 4))
+    for n in names:
+        g = np.array([x["mae"] for x in load(n)["per_step"]])
+        rel = (s - g) / s * 100
+        ax.plot(np.arange(1, 13) * 5, rel, color=viz.MODEL_COLORS[n], marker="o", ms=4, label=L[n])
+    ax.axhline(0, color=viz.AXIS, lw=1)
+    ax.axhline(3, color=viz.MUTED, lw=1, ls=":")
+    ax.text(61, 3, "seuil de\ndécision 3 %", color=viz.MUTED, fontsize=8, va="center")
+    ax.legend(loc="lower left", fontsize=8.5)
+    ax.set_xlim(3, 70)
+    ax.set_xticks([5, 15, 30, 45, 60])
+    ax.set_xlabel("Horizon (minutes)")
+    ax.set_ylabel("Gain de MAE vs STID (%)")
+    ax.set_title("Gain relatif de chaque variante Graph WaveNet sur STID (> 0 : meilleur que STID)")
+    viz.save(fig, OUT / "results_gain_vs_stid.png")
