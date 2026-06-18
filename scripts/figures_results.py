@@ -49,3 +49,19 @@ def metric_table(names, path):
     head = "| Modèle | 15 min | 30 min | 60 min | Moyenne 12 pas |\n|---|---|---|---|---|\n"
     path.write_text(head + "\n".join(rows) + "\n\n: MAE / RMSE / MAPE sur le test (mph). Gras : meilleur. "
                     "Généré par `scripts/figures_results.py`. {#tbl-" + path.stem + "}\n")
+
+
+def cost_table(names, path):
+    rows = []
+    ref = load("stid", "cost")
+    for n in names:
+        c, m = load(n, "cost"), load(n)
+        rows.append(f"| {L[n]} | {c['params'] / 1e3:.0f} k | {c['epoch_s_mean']:.1f} | {c['best_epoch']} | "
+                    f"{c['train_time_to_best_s'] / 60:.1f} | {c['latency_ms_bs1']:.2f} | "
+                    f"{c['latency_ms_bs64']:.2f} | {c['peak_gpu_mem_mb']:.0f} | {m['60min']['mae']:.3f} |")
+    head = ("| Modèle | Paramètres | s / époque | Meilleure époque | Minutes jusqu'au meilleur | "
+            "Latence bs=1 (ms) | Latence bs=64 (ms) | Mémoire GPU pic (Mo) | MAE 60 min |\n"
+            + "|---" * 9 + "|\n")
+    path.write_text(head + "\n".join(rows) + f"\n\n: Coûts mesurés sur {ref['device']} (deux entraînements "
+                    "en parallèle sur le GPU, donc temps absolus pessimistes ; les ratios sont comparables). "
+                    "{#tbl-" + path.stem + "}\n")
