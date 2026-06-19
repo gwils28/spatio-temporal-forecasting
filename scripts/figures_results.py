@@ -232,3 +232,34 @@ def per_sensor_map(df, y, preds):
     fig.tight_layout()
     viz.save(fig, OUT / "results_sensor_gain.png")
     return diff
+
+
+def regimes(y, last_in, preds):
+    """MAE à 60 min par régime de trafic, défini par l'entrée et la cible."""
+    yt, li = y[:, -1], last_in
+    valid = (yt > 0) & (li > 0)
+    regs = {
+        "Fluide stable": valid & (li >= 55) & (yt >= 55),
+        "Début de congestion": valid & (li >= 55) & (yt < 40),
+        "Congestion": valid & (li < 40) & (yt < 40),
+        "Résorption": valid & (li < 40) & (yt >= 55),
+    }
+    rows = []
+    for r, m in regs.items():
+        row = {"Régime": r, "Part du test": f"{m.sum() / valid.sum() * 100:.1f} %"}
+        for n, p in preds.items():
+            row[L[n]] = np.abs(p[:, -1] - yt)[m].mean()
+        rows.append(row)
+    t = pd.DataFrame(rows)
+    names = list(preds)
+    fig, ax = plt.subplots(figsize=(9, 4))
+    x = np.arange(len(t))
+    w = 0.8 / len(names)
+    for i, n in enumerate(names):
+        ax.bar(x + (i - (len(names) - 1) / 2) * w, t[L[n]], width=w * 0.92, color=viz.MODEL_COLORS[n], label=L[n])
+    ax.set_xticks(x, [f"{a}\n({b})" for a, b in zip(t["Régime"], t["Part du test"])])
+    ax.set_ylabel("MAE à 60 min (mph)")
+    ax.legend(loc="lower left", ncol=len(names), bbox_to_anchor=(0, 1.0))
+    ax.set_title("Erreur par régime : les débuts de congestion concentrent la difficulté", pad=34)
+    viz.save(fig, OUT / "results_regimes.png")
+    return t
