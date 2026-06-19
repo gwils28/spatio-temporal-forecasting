@@ -152,3 +152,23 @@ def pareto(names):
                  fontweight="bold")
     fig.tight_layout()
     viz.save(fig, OUT / "results_pareto.png")
+
+
+def learning_curves(names):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ends = []
+    for n in names:
+        h = load(n, "history")
+        t = np.cumsum([e["epoch_s"] for e in h]) / 60
+        v = [e["val_mae"] for e in h]
+        ax.plot(t, v, color=viz.MODEL_COLORS[n], lw=1.6)
+        ends.append((t[-1], v[-1]))
+    for n, (tx, _), y in zip(names, ends, viz.spread_labels([e[1] for e in ends], 0.03)):
+        ax.text(tx * 1.05, y, L[n], color=viz.INK2, fontsize=8.5, va="center")
+    ax.set_xscale("log")
+    viz.plain_log_ticks(ax)
+    ax.set_ylim(2.6, 3.4)
+    ax.set_xlabel("Temps d'entraînement cumulé (min, log)")
+    ax.set_ylabel("MAE validation (mph)")
+    ax.set_title("Courbes d'apprentissage en temps réel : STID converge en quelques minutes")
+    viz.save(fig, OUT / "results_learning_curves.png")
