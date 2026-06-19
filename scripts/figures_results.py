@@ -263,3 +263,24 @@ def regimes(y, last_in, preds):
     ax.set_title("Erreur par régime : les débuts de congestion concentrent la difficulté", pad=34)
     viz.save(fig, OUT / "results_regimes.png")
     return t
+
+
+def error_by_hour(df, test, y, preds):
+    hours = df.index[test + 12 + 11].hour
+    fig, ax = plt.subplots(figsize=(9, 3.8))
+    m = y[:, -1] > 0
+    ends = []
+    for n, p in preds.items():
+        ok = m.sum(1) > 0
+        err = (np.abs(p[:, -1] - y[:, -1]) * m).sum(1)[ok] / m.sum(1)[ok]
+        e = pd.Series(err).groupby(np.asarray(hours)[ok]).mean()
+        ax.plot(e.index, e.to_numpy(), color=viz.MODEL_COLORS[n], marker="o", ms=3)
+        ends.append(e.iloc[-1])
+    for n, y_ in zip(preds, viz.spread_labels(ends, 0.3)):
+        ax.text(23.4, y_, L[n], color=viz.INK2, fontsize=8.5, va="center")
+    ax.set_xlim(-0.5, 28)
+    ax.set_xticks(range(0, 24, 3))
+    ax.set_xlabel("Heure de la cible")
+    ax.set_ylabel("MAE à 60 min (mph)")
+    ax.set_title("Erreur selon l'heure : les pointes concentrent l'erreur pour tous les modèles")
+    viz.save(fig, OUT / "results_error_by_hour.png")
