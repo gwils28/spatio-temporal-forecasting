@@ -198,3 +198,12 @@ def substitution():
     ax.grid(axis="y", visible=False)
     ax.set_title("Deux leviers, même effet : lever l'indistinguabilité")
     viz.save(fig, OUT / "results_substitution.png")
+
+
+def _test_frame():
+    df = load_metr_la()
+    speed = df.to_numpy()
+    test = split_indices(make_windows(len(df)))["test"]
+    y = speed[test[:, None] + 12 + np.arange(12)[None, :]]
+    last_in = speed[test + 11]
+    return df, test, y, last_in
