@@ -306,3 +306,41 @@ def forecast_example(df, test, y, preds):
     import matplotlib.dates as mdates
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     viz.save(fig, OUT / "results_forecast_example.png")
+
+
+def embeddings(df):
+    if not (ART / "stid" / "node_emb.npy").exists():
+        return None
+    loc = load_locations().set_index("sensor_id").loc[df.columns]
+    E = np.load(ART / "stid" / "node_emb.npy")
+    Ec = E - E.mean(0)
+    _, sv, vt = np.linalg.svd(Ec, full_matrices=False)
+    pc = Ec @ vt[:2].T
+    speed = df.replace(0, np.nan).mean().to_numpy()
+    var = (sv[:2] ** 2 / (sv ** 2).sum()).sum()
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
+    sc = axes[0].scatter(pc[:, 0], pc[:, 1], c=speed, cmap=viz.SEQ.reversed(), s=24, edgecolor=viz.SURFACE, lw=0.6)
+    fig.colorbar(sc, ax=axes[0], label="Vitesse moyenne (mph)")
+    axes[0].set_title(f"Identités spatiales (ACP, {var * 100:.0f} % var.)", fontsize=10)
+    axes[0].set_xlabel("CP1")
+    axes[0].set_ylabel("CP2")
+    axes[1].scatter(loc.longitude, loc.latitude, c=pc[:, 0], cmap=viz.SEQ, s=26, edgecolor=viz.SURFACE, lw=0.6)
+    axes[1].set_title("CP1 projetée sur la carte", fontsize=10)
+    axes[1].set_xticks([])
+    axes[1].set_yticks([])
+    axes[1].grid(False)
+    T = np.load(ART / "stid" / "tod_emb.npy")
+    Tc = T - T.mean(0)
+    _, _, vt2 = np.linalg.svd(Tc, full_matrices=False)
+    tp = Tc @ vt2[:2].T
+    hours = np.arange(288) / 12
+    axes[2].plot(tp[:, 0], tp[:, 1], color=viz.AXIS, lw=0.8, zorder=1)
+    sc2 = axes[2].scatter(tp[:, 0], tp[:, 1], c=hours, cmap="twilight", s=14, zorder=2)
+    fig.colorbar(sc2, ax=axes[2], label="Heure")
+    for hh in (0, 6, 8, 12, 17, 21):
+        axes[2].annotate(f"{hh}h", tp[hh * 12], fontsize=8, color=viz.INK2, xytext=(4, 4), textcoords="offset points")
+    axes[2].set_title("Identités « heure du jour » (ACP) : un cycle appris", fontsize=10)
+    fig.suptitle("Ce que STID a appris sans qu'on le lui dise", x=0.01, ha="left", fontweight="bold")
+    fig.tight_layout()
+    viz.save(fig, OUT / "results_embeddings.png")
+    return float(np.corrcoef(pc[:, 0], speed)[0, 1])
