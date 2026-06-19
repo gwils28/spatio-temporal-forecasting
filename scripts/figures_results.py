@@ -105,3 +105,25 @@ def horizon_zoom(names):
     ax.set_ylabel("Gain de MAE vs STID (%)")
     ax.set_title("Gain relatif de chaque variante Graph WaveNet sur STID (> 0 : meilleur que STID)")
     viz.save(fig, OUT / "results_gain_vs_stid.png")
+
+
+def ablation_bars(names, fname, title):
+    """Graphique à points (axe non nul autorisé, contrairement aux barres)."""
+    fig, axes = plt.subplots(1, 3, figsize=(12, 3.6), sharey=True)
+    for ax, h in zip(axes, ["15min", "30min", "60min"]):
+        vals = [load(n)[h]["mae"] for n in names]
+        y = np.arange(len(names))[::-1]
+        ax.hlines(y, min(vals) * 0.97, vals, color=viz.GRID, lw=2, zorder=1)
+        ax.scatter(vals, y, s=90, color=[viz.MODEL_COLORS[n] for n in names], edgecolor=viz.SURFACE, lw=1.5,
+                   zorder=3)
+        for yi, v in zip(y, vals):
+            ax.text(v, yi + 0.22, f"{v:.2f}", ha="center", fontsize=9, color=viz.INK2)
+        ax.set_yticks(y, [L[n] for n in names])
+        ax.set_xlim(min(vals) * 0.97, max(vals) * 1.04)
+        ax.set_ylim(-0.5, len(names) - 0.3)
+        ax.set_title(h.replace("min", " min"), fontsize=10)
+        ax.set_xlabel("MAE (mph)")
+        ax.grid(axis="y", visible=False)
+    fig.suptitle(title, x=0.01, ha="left", fontweight="bold")
+    fig.tight_layout()
+    viz.save(fig, OUT / fname)
