@@ -172,3 +172,29 @@ def learning_curves(names):
     ax.set_ylabel("MAE validation (mph)")
     ax.set_title("Courbes d'apprentissage en temps réel : STID converge en quelques minutes")
     viz.save(fig, OUT / "results_learning_curves.png")
+
+
+def substitution():
+    """Identités (STID) et graphe (GWNet) : deux leviers qui résolvent le même problème."""
+    pairs = [("stid_no_ids", "stid", "STID : + identités", viz.CAT[0]),
+             ("gwnet_nograph", "gwnet", "Graph WaveNet : + graphe", viz.CAT[1])]
+    fig, ax = plt.subplots(figsize=(8, 2.8))
+    for i, (a, b, _, c) in enumerate(pairs):
+        va, vb = load(a)["60min"]["mae"], load(b)["60min"]["mae"]
+        cb = load(b, "cost")["epoch_s_mean"]
+        y = 1 - i
+        ax.annotate("", xy=(vb, y), xytext=(va, y),
+                    arrowprops={"arrowstyle": "-|>", "color": c, "lw": 2.2, "mutation_scale": 16})
+        ax.scatter([va], [y], s=60, color=viz.SURFACE, edgecolor=c, lw=2, zorder=3)
+        ax.scatter([vb], [y], s=80, color=c, edgecolor=viz.SURFACE, lw=1.5, zorder=3)
+        ax.text(va + 0.02, y + 0.18, f"sans : {va:.2f}", fontsize=9, color=viz.INK2)
+        ax.text(vb + 0.02, y + 0.18, f"avec : {vb:.2f}  ({(vb - va) / va * 100:+.0f} %, {cb:.0f} s/époque)",
+                fontsize=9, color=viz.INK2, ha="left")
+    ax.set_yticks([1, 0], [p[2] for p in pairs])
+    ax.set_ylim(-0.5, 1.6)
+    ax.set_xlim(3.3, 4.7)
+    ax.invert_xaxis()
+    ax.set_xlabel("MAE à 60 min (mph) — vers la droite, c'est mieux")
+    ax.grid(axis="y", visible=False)
+    ax.set_title("Deux leviers, même effet : lever l'indistinguabilité")
+    viz.save(fig, OUT / "results_substitution.png")
