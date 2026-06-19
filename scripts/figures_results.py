@@ -284,3 +284,25 @@ def error_by_hour(df, test, y, preds):
     ax.set_ylabel("MAE à 60 min (mph)")
     ax.set_title("Erreur selon l'heure : les pointes concentrent l'erreur pour tous les modèles")
     viz.save(fig, OUT / "results_error_by_hour.png")
+
+
+def forecast_example(df, test, y, preds):
+    """Une journée sur le capteur où l'écart STID/GWNet est le plus marqué en congestion."""
+    idx = df.index[test + 12 + 11]
+    day = (idx.normalize() == idx.normalize()[np.argmax((idx.day_of_week == 1) & (idx.hour == 0))])
+    yy = y[day, -1]
+    k = int(np.argmax(yy.std(0) * (yy.min(0) > 0)))
+    fig, ax = plt.subplots(figsize=(10, 4))
+    t = idx[day]
+    obs = np.where(yy[:, k] > 0, yy[:, k], np.nan)  # pannes capteur : non tracées
+    ax.plot(t, obs, color=viz.INK, lw=1.6, label="Observé (trous = panne capteur)")
+    for n, p in preds.items():
+        if n in ("stid", "gwnet"):
+            ax.plot(t, p[day, -1, k], color=viz.MODEL_COLORS[n], lw=1.6, label=L[n])
+    ax.legend(loc="lower left")
+    ax.set_ylabel("Vitesse (mph)")
+    jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+    ax.set_title(f"Capteur {df.columns[k]}, {jours[t[0].day_of_week]} {t[0]:%d/%m/%Y} : prévisions faites 60 min avant")
+    import matplotlib.dates as mdates
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    viz.save(fig, OUT / "results_forecast_example.png")
