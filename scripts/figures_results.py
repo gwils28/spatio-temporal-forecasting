@@ -207,3 +207,28 @@ def _test_frame():
     y = speed[test[:, None] + 12 + np.arange(12)[None, :]]
     last_in = speed[test + 11]
     return df, test, y, last_in
+
+
+def per_sensor_map(df, y, preds):
+    loc = load_locations().set_index("sensor_id").loc[df.columns]
+    m = y[:, -1] > 0
+    def mae_node(p):
+        return (np.abs(p[:, -1] - y[:, -1]) * m).sum(0) / m.sum(0)
+    diff = mae_node(preds["stid"]) - mae_node(preds["gwnet"])  # > 0 : GWNet meilleur
+    lim = np.abs(diff).max()
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.8), gridspec_kw={"width_ratios": [1.6, 1]})
+    sc = axes[0].scatter(loc.longitude, loc.latitude, c=diff, cmap=viz.DIV.reversed(), vmin=-lim, vmax=lim,
+                         s=36, edgecolor=viz.SURFACE, lw=0.8)
+    fig.colorbar(sc, ax=axes[0], label="MAE STID − MAE GWNet (mph)", shrink=0.85)
+    axes[0].set_title("Où le graphe aide-t-il ? (bleu : GWNet meilleur, rouge : STID meilleur)", fontsize=10)
+    axes[0].set_xticks([])
+    axes[0].set_yticks([])
+    axes[0].grid(False)
+    axes[1].hist(diff, bins=30, color=viz.CAT[0], edgecolor=viz.SURFACE)
+    axes[1].axvline(0, color=viz.INK, lw=1)
+    axes[1].set_xlabel("MAE STID − MAE GWNet à 60 min (mph)")
+    axes[1].set_ylabel("Capteurs")
+    axes[1].set_title(f"GWNet meilleur sur {(diff > 0).mean() * 100:.0f} % des capteurs", fontsize=10)
+    fig.tight_layout()
+    viz.save(fig, OUT / "results_sensor_gain.png")
+    return diff
