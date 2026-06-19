@@ -393,3 +393,58 @@ def adaptive_vs_road():
     viz.save(fig, OUT / "results_adaptive_vs_road.png")
     del bins
     return float((hops <= 2).mean()), float((rand <= 2).mean()), float(np.median(A.max(1)))
+
+
+def main():
+    viz.setup()
+    TAB.mkdir(parents=True, exist_ok=True)
+    stats = {}
+    main_ = available(MAIN)
+    metric_table(main_, TAB / "main.md")
+    horizon_curve(main_)
+    sa, ga = available(STID_ABL), available(GW_ABL)
+    if sa:
+        metric_table(sa, TAB / "stid_ablation.md")
+        ablation_bars(sa, "results_ablation_stid.png", "Ablation STID : retirer les identités")
+    if ga:
+        metric_table(ga, TAB / "gwnet_ablation.md")
+        ablation_bars(ga, "results_ablation_gwnet.png", "Ablation Graph WaveNet : d'où vient le graphe ?")
+        horizon_zoom(ga)
+    if load("stid_no_ids") and load("gwnet_nograph"):
+        substitution()
+    learned = [n for n in ["stid", *sa[1:], *ga] if load(n, "cost")]
+    cost_table(learned, TAB / "costs.md")
+    pareto(learned)
+    learning_curves([n for n in ["stid", "gwnet", "gwnet_nograph"] if load(n, "history")])
+    df, test, y, last_in = _test_frame()
+    preds = {}
+    tod, dow = time_features(df.index)
+    from stforecast.baselines import historical_average, predict_ha
+    split = split_indices(make_windows(len(df)))
+    preds["ha"] = predict_ha(historical_average(df.to_numpy(), tod, dow, int(split["train"][-1] + 12)), tod, dow, test)
+    for n in ["stid", "gwnet", "gwnet_nograph"]:
+        f = ART / n / "test_pred.npz"
+        if f.exists():
+            preds[n] = np.load(f)["pred"].astype(np.float32)
+    if "stid" in preds and "gwnet" in preds:
+        diff = per_sensor_map(df, y, preds)
+        stats["sensor_gwnet_better_pct"] = float((diff > 0).mean() * 100)
+        stats["sensor_diff_median"] = float(np.median(diff))
+        reg = regimes(y, last_in, preds)
+        (TAB / "regimes.md").write_text(reg.to_markdown(index=False, floatfmt=".2f") +
+                                        "\n\n: MAE à 60 min par régime (entrée = dernière vitesse observée, "
+                                        "cible = vitesse à +60 min ; seuils 40 / 55 mph). {#tbl-regimes}\n")
+        error_by_hour(df, test, y, preds)
+        forecast_example(df, test, y, preds)
+    r = embeddings(df)
+    if r is not None:
+        stats["node_pc1_speed_corr"] = r
+    av = adaptive_vs_road()
+    if av:
+        stats["adaptive_top5_within2hops"], stats["random_within2hops"], stats["adaptive_rowmax_median"] = av
+    (RES / "figure_stats.json").write_text(json.dumps(stats, indent=2))
+    print(json.dumps(stats, indent=2))
+
+
+if __name__ == "__main__":
+    main()
