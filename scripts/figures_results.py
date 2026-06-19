@@ -344,3 +344,52 @@ def embeddings(df):
     fig.tight_layout()
     viz.save(fig, OUT / "results_embeddings.png")
     return float(np.corrcoef(pc[:, 0], speed)[0, 1])
+
+
+def adaptive_vs_road():
+    p = ART / "gwnet" / "adaptive_adj.npy"
+    if not p.exists():
+        return None
+    from stforecast.data import load_adjacency
+    from stforecast.graph import k_hop_reach  # noqa: F401
+    _, adj = load_adjacency()
+    A = np.load(p)
+    a = adj.copy()
+    np.fill_diagonal(a, 0)
+    n = len(A)
+    hop = np.full((n, n), 99)
+    reach = np.eye(n, dtype=bool)
+    b = (a > 0) | (a.T > 0)
+    hop[reach] = 0
+    for k in range(1, 7):
+        reach = reach | ((reach.astype(int) @ b.astype(int)) > 0)
+        hop[(hop == 99) & reach] = k
+    A_off = A.copy()
+    np.fill_diagonal(A_off, 0)
+    top = np.argsort(-A_off, axis=1)[:, :5]
+    hops = hop[np.arange(n)[:, None], top].ravel()
+    rand = hop[np.arange(n)[:, None], np.random.default_rng(0).integers(0, n, (n, 5))].ravel()
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
+    axes[0].imshow(np.where(adj > 0, adj, np.nan), cmap=viz.SEQ, interpolation="nearest")
+    axes[0].set_title("Adjacence routière (a priori)", fontsize=10)
+    axes[1].imshow(A, cmap=viz.SEQ, interpolation="nearest", vmax=np.quantile(A, 0.995))
+    axes[1].set_title("Adjacence adaptative apprise Ã", fontsize=10)
+    for ax in axes[:2]:
+        ax.grid(False)
+    bins = list(range(0, 8))
+    lab = [str(k) for k in range(1, 7)] + ["> 6"]
+    h1 = [(np.minimum(hops, 7) == k).mean() * 100 for k in range(1, 8)]
+    h2 = [(np.minimum(rand, 7) == k).mean() * 100 for k in range(1, 8)]
+    x = np.arange(7)
+    axes[2].bar(x - 0.2, h1, 0.38, color=viz.CAT[2], label="Top-5 voisins appris")
+    axes[2].bar(x + 0.2, h2, 0.38, color=viz.AXIS, label="5 nœuds au hasard")
+    axes[2].set_xticks(x, lab)
+    axes[2].set_xlabel("Distance en sauts sur le graphe routier")
+    axes[2].set_ylabel("% des paires")
+    axes[2].legend()
+    axes[2].set_title("Les voisins appris sont-ils des voisins routiers ?", fontsize=10)
+    fig.suptitle("Graphe a priori vs graphe appris", x=0.01, ha="left", fontweight="bold")
+    fig.tight_layout()
+    viz.save(fig, OUT / "results_adaptive_vs_road.png")
+    del bins
+    return float((hops <= 2).mean()), float((rand <= 2).mean()), float(np.median(A.max(1)))
