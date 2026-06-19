@@ -127,3 +127,28 @@ def ablation_bars(names, fname, title):
     fig.suptitle(title, x=0.01, ha="left", fontweight="bold")
     fig.tight_layout()
     viz.save(fig, OUT / fname)
+
+
+def pareto(names):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+    for ax, key, xl in [(axes[0], "train_time_to_best_s", "Temps d'entraînement jusqu'au meilleur modèle (min, log)"),
+                        (axes[1], "latency_ms_bs64", "Latence d'inférence, batch 64 (ms, log)")]:
+        for n in names:
+            c, m = load(n, "cost"), load(n)
+            x = c[key] / (60 if key.startswith("train") else 1)
+            ax.scatter(x, m["60min"]["mae"], s=30 + c["params"] / 2500, color=viz.MODEL_COLORS[n],
+                       edgecolor=viz.SURFACE, lw=1.5, zorder=3)
+            if n in ("gwnet_road", "gwnet_adaptive"):
+                continue
+            lab = "GWNet avec graphe (3 variantes)" if n == "gwnet" else L[n]
+            ax.annotate(lab, (x, m["60min"]["mae"]), xytext=(-6, 10) if n == "gwnet" else (6, 4),
+                        textcoords="offset points", fontsize=8.5, color=viz.INK2,
+                        ha="right" if n == "gwnet" else "left")
+        ax.set_xscale("log")
+        viz.plain_log_ticks(ax)
+        ax.set_xlabel(xl)
+        ax.set_ylabel("MAE à 60 min (mph)")
+    fig.suptitle("Précision vs coût — en bas à gauche, c'est mieux (taille ∝ paramètres)", x=0.01, ha="left",
+                 fontweight="bold")
+    fig.tight_layout()
+    viz.save(fig, OUT / "results_pareto.png")
