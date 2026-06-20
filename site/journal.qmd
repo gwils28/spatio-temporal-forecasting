@@ -108,3 +108,13 @@ et les écarts au plan dans les
 - Figure de diffusion d'une impulsion sur le **vrai** graphe METR-LA, en aval et en amont.
 - Page indistinguabilité : 5,4 % des paires de fenêtres jumelles divergent de plus de
   10 mph à 60 min.
+
+## 20 juin 2026 — Figures de résultats générées
+
+- Toutes les tables du site sont **générées** depuis `results/`. Aucun chiffre n'est recopié
+  à la main.
+- Corrections de lisibilité : barres d'ablation sur axe tronqué remplacées par des points,
+  étiquettes qui se chevauchaient, graduations log illisibles, pannes capteur tracées comme
+  des chutes à 0.
+- Adjacence apprise : diffuse, structurée en colonnes, à peine plus « routière » qu'un
+  tirage aléatoire (20 % contre 16 % des top-5 voisins à 2 sauts ou moins).
