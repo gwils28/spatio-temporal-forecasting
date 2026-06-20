@@ -1,0 +1,8 @@
+{
+  "sensor_gwnet_better_pct": 32.367149758454104,
+  "sensor_diff_median": -0.04109925808442583,
+  "node_pc1_speed_corr": -0.7287675153696631,
+  "adaptive_top5_within2hops": 0.2038647342995169,
+  "random_within2hops": 0.15942028985507245,
+  "adaptive_rowmax_median": 0.014109336771070957
+}
