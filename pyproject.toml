@@ -21,12 +21,17 @@ dependencies = [
     "scipy>=1.18.1",
     "seaborn>=0.13.2",
     "tables>=3.11.1",
+    "tabulate>=0.10.0",
     "torch>=2.11.0",
     "tqdm>=4.66.5",
 ]
 
 [[tool.uv.index]]
 url = "https://download.pytorch.org/whl/cu128"
+
+[build-system]
+requires = ["uv_build>=0.12.22,<0.13.0"]
+build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
