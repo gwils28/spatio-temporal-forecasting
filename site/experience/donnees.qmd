@@ -1,0 +1,29 @@
+---
+title: "Les données : METR-LA"
+subtitle: "207 capteurs, 4 mois, 5 minutes, et 8 % de trous"
+categories: [données, EDA]
+---
+
+::: {.kpi-row}
+::: {.kpi}
+[207]{.v}
+[capteurs de boucle (autoroutes de LA)]{.l}
+:::
+::: {.kpi}
+[34 272]{.v}
+[pas de 5 min (1er mars → 27 juin 2012)]{.l}
+:::
+::: {.kpi}
+[8,1 %]{.v}
+[de valeurs manquantes (zéros)]{.l}
+:::
+::: {.kpi}
+[1 722]{.v}
+[arêtes pondérées dans l'adjacence]{.l}
+:::
+:::
+
+Source : dépôt DCRNN. Le `metr-la.h5` est téléchargé depuis le Google Drive référencé par
+le README, et `adj_mx.pkl` depuis `data/sensor_graph/`. Commande : `./scripts/download_data.sh`.
+
+::: {.callout-note}
