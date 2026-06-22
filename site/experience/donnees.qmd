@@ -36,3 +36,17 @@ avec `h5py` (`stforecast.data.load_metr_la`). C'est consigné dans le [journal](
 ## Le réseau
 
 ![Carte des capteurs et adjacence routière.](../figures/eda_sensor_map.png){#fig-map}
+
+## La dynamique
+
+![Une semaine de vitesses. Les bandes sombres sont les congestions de pointe, qui reviennent chaque jour ouvré sur les mêmes capteurs.](../figures/eda_speed_heatmap.png){#fig-heat}
+
+![Profil moyen par heure. La forme diffère nettement entre semaine et week-end, d'où l'identité « jour de semaine » de STID.](../figures/eda_daily_profile.png){#fig-profile}
+
+Deux constats motivent directement les **identités temporelles** de STID :
+
+1. la vitesse dépend fortement de l'**heure** : deux pointes en semaine, vers 7-9 h et 15-19 h ;
+2. le **week-end** a un profil différent, sans pointe du matin.
+
+Un modèle qui ne voit que la fenêtre d'une heure doit *deviner* où il se trouve dans
+ce cycle. STID le lui donne.
