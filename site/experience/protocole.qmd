@@ -1,0 +1,5 @@
+---
+title: "Protocole expérimental"
+subtitle: "Fixé avant les résultats (SPEC.md), et vérifié par les tests"
+categories: [méthode]
+---
