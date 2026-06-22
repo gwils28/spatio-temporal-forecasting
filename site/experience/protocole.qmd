@@ -22,3 +22,15 @@ moyenne sur les 12 pas.
 | Perte | MAE masquée, calculée sur les vitesses dénormalisées | aligne l'optimisation sur la métrique rapportée |
 | Sélection | meilleure MAE de **validation** ; test lu une fois | pas d'optimisation implicite sur le test |
 | Seeds | 1 (budget) | limite assumée, discutée dans les [résultats](resultats.qmd) |
+
+## Métriques masquées
+
+$$
+\text{MAE} = \frac{\sum_{i} m_i\,|\hat y_i - y_i|}{\sum_i m_i},\qquad
+\text{RMSE} = \sqrt{\frac{\sum_i m_i\,(\hat y_i - y_i)^2}{\sum_i m_i}},\qquad
+\text{MAPE} = \frac{100}{\sum_i m_i}\sum_i m_i \frac{|\hat y_i - y_i|}{|y_i|}
+$$
+
+avec $m_i = \mathbb{1}[y_i \neq 0]$. Implémentation : `stforecast.metrics`, testée dans
+`tests/test_metrics.py`. Le test `test_masked_mae_ignores_zeros` vérifie qu'une prédiction
+de 999 sur un trou ne compte pas.
