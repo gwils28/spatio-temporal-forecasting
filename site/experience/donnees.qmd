@@ -50,3 +50,20 @@ Deux constats motivent directement les **identités temporelles** de STID :
 
 Un modèle qui ne voit que la fenêtre d'une heure doit *deviner* où il se trouve dans
 ce cycle. STID le lui donne.
+
+## Les trous
+
+![Les zéros arrivent par blocs : des pannes de capteurs, pas des embouteillages à 0 mph.](../figures/eda_missing.png){#fig-missing}
+
+Conséquences pour le protocole ([détails](protocole.qmd)) :
+
+- les zéros sont **exclus** de la perte et des métriques (masquage) ;
+- les modèles reçoivent pourtant des zéros **en entrée**, comme en production ;
+- en déploiement, un capteur muet doit être signalé, pas prédit à 0 (voir [System design](../system-design.qmd)).
+
+## Propagation spatiale
+
+![Les ondes de congestion remontent le flux sur environ un tiers des arêtes orientées.](../figures/eda_propagation.png){#fig-prop}
+
+Analyse détaillée sur [Le graphe est une hypothèse](../concepts/graphe-hypothese.qmd).
+Le notebook [Exploration](exploration.ipynb) reproduit ces analyses pas à pas.
