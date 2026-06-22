@@ -11,3 +11,14 @@ On rapporte les erreurs aux pas 3, 6 et 12, soit **15, 30 et 60 minutes**, plus 
 moyenne sur les 12 pas.
 
 ![Split chronologique des fenêtres. Le test couvre les 20 % les plus récents.](../figures/eda_split.png){#fig-split}
+
+## Choix qui comptent (et pourquoi)
+
+| Choix | Valeur | Raison |
+|---|---|---|
+| Split | chronologique 70 / 10 / 20 sur les fenêtres | standard DCRNN ; pas de fuite du futur |
+| Normalisation | z-score scalaire ajusté **sur le train seulement** | évite de lire les statistiques du test |
+| Valeurs manquantes | zéros **masqués** dans la perte et les métriques | un 0 est une panne, pas une vitesse |
+| Perte | MAE masquée, calculée sur les vitesses dénormalisées | aligne l'optimisation sur la métrique rapportée |
+| Sélection | meilleure MAE de **validation** ; test lu une fois | pas d'optimisation implicite sur le test |
+| Seeds | 1 (budget) | limite assumée, discutée dans les [résultats](resultats.qmd) |
