@@ -3,3 +3,11 @@ title: "Protocole expérimental"
 subtitle: "Fixé avant les résultats (SPEC.md), et vérifié par les tests"
 categories: [méthode]
 ---
+
+## La tâche
+
+**12 → 12** : une heure d'historique (12 pas de 5 min) pour prévoir l'heure suivante.
+On rapporte les erreurs aux pas 3, 6 et 12, soit **15, 30 et 60 minutes**, plus la
+moyenne sur les 12 pas.
+
+![Split chronologique des fenêtres. Le test couvre les 20 % les plus récents.](../figures/eda_split.png){#fig-split}
