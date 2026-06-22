@@ -34,3 +34,16 @@ $$
 avec $m_i = \mathbb{1}[y_i \neq 0]$. Implémentation : `stforecast.metrics`, testée dans
 `tests/test_metrics.py`. Le test `test_masked_mae_ignores_zeros` vérifie qu'une prédiction
 de 999 sur un trou ne compte pas.
+
+## Hyperparamètres
+
+| | STID (BasicTS) | Graph WaveNet (article) |
+|---|---|---|
+| Entrée | vitesse, heure, jour (C = 3) | vitesse, heure (C = 2) |
+| Batch | 32 | 64 |
+| Optimiseur | Adam, lr 2e-3, wd 1e-4 | Adam, lr 1e-3, wd 1e-4 |
+| Planning | MultiStep [1, 50, 80] × 0,5 | constant, clip 5 |
+| Époques | 100 max, patience 30 | 100 max, patience 30 |
+| Dropout | 0,15 | 0,3 |
+
+: Hyperparamètres repris des configurations de référence, sans recherche supplémentaire (`configs/*.yaml`). {#tbl-hp}
