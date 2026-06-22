@@ -32,3 +32,7 @@ Le HDF5 a été écrit par pandas en 2019. Les versions récentes de pandas ne l
 plus (`TypeError: a bytes-like object is required`). On lit donc directement les blocs
 avec `h5py` (`stforecast.data.load_metr_la`). C'est consigné dans le [journal](../journal.qmd).
 :::
+
+## Le réseau
+
+![Carte des capteurs et adjacence routière.](../figures/eda_sensor_map.png){#fig-map}
