@@ -47,3 +47,26 @@ de 999 sur un trou ne compte pas.
 | Dropout | 0,15 | 0,3 |
 
 : Hyperparamètres repris des configurations de référence, sans recherche supplémentaire (`configs/*.yaml`). {#tbl-hp}
+
+## Plan d'expérience
+
+```{mermaid}
+flowchart LR
+  subgraph S["Sans apprentissage"]
+    HA["Moyenne historique<br/>(créneau × capteur)"]
+    LV["Persistance"]
+  end
+  subgraph NG["Sans graphe"]
+    STID["STID"]
+    A1["− id. spatiale"]
+    A2["− id. temporelles"]
+    A3["− toutes (MLP nu)"]
+  end
+  subgraph G["Graph WaveNet"]
+    G0["route + adaptative"]
+    G1["route seule"]
+    G2["adaptative seule"]
+    G3["sans graphe (TCN)"]
+  end
+  S --> NG --> G
+```
