@@ -70,3 +70,15 @@ rien. **Si la fonction de coût métier est pondérée vers la congestion, le gr
 pari.** Si elle est uniforme, il le perd. Le critère du SPEC (MAE moyenne) ne le voyait pas.
 C'est la leçon principale du projet (voir le verdict).
 :::
+
+## Par capteur
+
+![Différence d'erreur à 60 min par capteur. Le gain du graphe est concentré sur quelques tronçons.](../figures/results_sensor_gain.png){#fig-sensors}
+
+À 60 min, Graph WaveNet n'est meilleur que sur **32 % des capteurs**, mais ses gains sont
+plus gros que ses pertes (queue droite de l'histogramme). Les capteurs où il gagne forment
+des **segments contigus** sur la carte, pas des points isolés. C'est cohérent avec un signal
+qui se propage le long des tronçons ([analyse de propagation](../concepts/graphe-hypothese.qmd)).
+Il faudrait croiser ces segments avec les zones de congestion récurrente (carte des
+[données](donnees.qmd)) pour confirmer qu'il s'agit de l'amont des bouchons. C'est une
+piste, pas un résultat.
