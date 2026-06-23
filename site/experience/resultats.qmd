@@ -1,0 +1,7 @@
+---
+title: "Résultats : STID vs Graph WaveNet"
+subtitle: "Le graphe gagne-t-il son pari sur METR-LA ?"
+categories: [résultats]
+---
+
+::: {.callout-important}
