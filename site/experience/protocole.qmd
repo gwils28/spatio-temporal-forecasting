@@ -70,3 +70,22 @@ flowchart LR
   end
   S --> NG --> G
 ```
+
+## Critère de décision (fixé avant les résultats)
+
+::: {.verdict}
+Le graphe « gagne son pari » si **(1)** Graph WaveNet bat STID d'au moins **3 % de MAE
+à 60 min**, **et (2)** ce gain disparaît quand on retire le graphe (`gwnet_nograph`).
+Sinon, la recommandation est STID.
+:::
+
+## Reproduire
+
+```bash
+./scripts/download_data.sh            # données DCRNN
+uv run pytest                          # 24 tests
+./scripts/run_all.sh                   # 8 entraînements (≈ 3 h sur RTX 5070 Laptop)
+uv run python scripts/eval_baselines.py
+uv run python scripts/make_figures.py  # toutes les figures du site
+quarto render site
+```
