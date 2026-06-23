@@ -14,3 +14,25 @@ latence en batch 119 fois plus élevée. **La recommandation par défaut est STI
 15 min) et surtout **en congestion** : −23 % d'erreur sur les débuts de bouchon, −11 % de
 MAPE à 60 min. La MAE moyenne le masque, car 71 % du test est du trafic fluide.
 :::
+
+## Le tableau principal
+
+{{< include _tables/main.md >}}
+
+Les deux implémentations reproduisent la littérature. STID donne 2,80 / 3,17 / 3,54, contre
+≈ 2,82 / 3,19 / 3,55 dans BasicTS. Graph WaveNet donne **2,69 / 3,07 / 3,53**, exactement
+les chiffres de l'article original sur METR-LA. Les comparaisons qui suivent portent donc
+sur des modèles bien entraînés, pas sur des versions affaiblies.
+
+| Écart GWNet vs STID | 15 min | 30 min | 60 min |
+|---|---|---|---|
+| MAE | −4,0 % | −3,2 % | **−0,1 %** |
+| RMSE | −7,9 % | −7,1 % | −3,7 % |
+| MAPE | −9,8 % | −11,1 % | **−10,8 %** |
+
+: Gain relatif de Graph WaveNet (négatif = moins d'erreur). Calculé depuis `results/*/metrics.json`. {#tbl-gain}
+
+**Pourquoi les métriques divergent.** La MAE pèse chaque mph d'erreur pareil. Le RMSE pénalise
+les grosses erreurs. Le MAPE divise par la vitesse réelle, donc **amplifie les erreurs à
+basse vitesse, c'est-à-dire en congestion**. Un gain de MAPE de 11 % avec une MAE inchangée
+signifie que Graph WaveNet se trompe moins quand ça bouchonne, et un peu plus quand ça roule.
