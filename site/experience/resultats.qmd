@@ -46,3 +46,20 @@ signifie que Graph WaveNet se trompe moins quand ça bouchonne, et un peu plus q
 Le graphe aide **à court terme** : à 15 minutes, l'état des voisins est l'information la plus
 fraîche sur ce qui arrive. À 60 minutes, l'onde de congestion a eu le temps de traverser
 plusieurs capteurs, et la mémoire statistique (identités) rattrape le contexte spatial.
+
+## Par régime de trafic
+
+{{< include _tables/regimes.md >}}
+
+![Erreur à 60 min selon le régime de trafic.](../figures/results_regimes.png){#fig-regimes}
+
+C'est le résultat le plus utile pour un décideur :
+
+- **Début de congestion** (2,4 % du test) : STID se trompe de 23 mph en moyenne, *plus que
+  la moyenne historique* (18 mph). Il prédit que la route reste fluide. Graph WaveNet descend
+  à 17,9 mph, car il voit l'aval ralentir.
+- **Congestion installée** (8,3 %) : Graph WaveNet fait −20 % d'erreur (5,8 contre 7,2 mph).
+- **Trafic fluide** (71 %) et **résorption** : STID est meilleur. Graph WaveNet anticipe des
+  ralentissements qui n'arrivent pas, ou tarde à voir la reprise.
+
+::: {.callout-tip}
