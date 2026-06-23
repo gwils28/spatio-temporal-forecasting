@@ -36,3 +36,13 @@ sur des modèles bien entraînés, pas sur des versions affaiblies.
 les grosses erreurs. Le MAPE divise par la vitesse réelle, donc **amplifie les erreurs à
 basse vitesse, c'est-à-dire en congestion**. Un gain de MAPE de 11 % avec une MAE inchangée
 signifie que Graph WaveNet se trompe moins quand ça bouchonne, et un peu plus quand ça roule.
+
+## Par horizon
+
+![MAE pas à pas. Les deux modèles convergent à 60 min.](../figures/results_horizon.png){#fig-horizon}
+
+![Gain relatif de chaque variante sur STID. Seule la version complète dépasse nettement le seuil de 3 %, et seulement jusqu'à 30 min environ. La version route l'effleure à 10-15 min.](../figures/results_gain_vs_stid.png){#fig-gain}
+
+Le graphe aide **à court terme** : à 15 minutes, l'état des voisins est l'information la plus
+fraîche sur ce qui arrive. À 60 minutes, l'onde de congestion a eu le temps de traverser
+plusieurs capteurs, et la mémoire statistique (identités) rattrape le contexte spatial.
