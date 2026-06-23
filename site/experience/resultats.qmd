@@ -63,3 +63,10 @@ C'est le résultat le plus utile pour un décideur :
   ralentissements qui n'arrivent pas, ou tarde à voir la reprise.
 
 ::: {.callout-tip}
+## Lecture métier
+Pour un service de dispatch, une erreur de 20 mph au début d'un bouchon coûte beaucoup plus
+cher qu'une erreur de 0,2 mph sur une autoroute fluide : c'est un retard de livraison contre
+rien. **Si la fonction de coût métier est pondérée vers la congestion, le graphe gagne son
+pari.** Si elle est uniforme, il le perd. Le critère du SPEC (MAE moyenne) ne le voyait pas.
+C'est la leçon principale du projet (voir le verdict).
+:::
