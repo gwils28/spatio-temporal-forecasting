@@ -5,3 +5,12 @@ categories: [résultats]
 ---
 
 ::: {.callout-important}
+## Verdict (critère fixé avant les résultats dans `SPEC.md`)
+**Non, au sens du critère pré-enregistré.** Graph WaveNet bat STID de **0,1 %** de MAE à
+60 min, loin du seuil de 3 %, pour un coût d'entraînement 10 fois plus élevé et une
+latence en batch 119 fois plus élevée. **La recommandation par défaut est STID.**
+
+**Mais le graphe n'est pas inutile.** Son gain est réel aux horizons courts (−4 % de MAE à
+15 min) et surtout **en congestion** : −23 % d'erreur sur les débuts de bouchon, −11 % de
+MAPE à 60 min. La MAE moyenne le masque, car 71 % du test est du trafic fluide.
+:::
