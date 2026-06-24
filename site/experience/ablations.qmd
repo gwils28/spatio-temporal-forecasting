@@ -1,0 +1,7 @@
+---
+title: "Ablations : d'où vient la performance ?"
+subtitle: "Retirer les identités de STID, retirer ou changer le graphe de Graph WaveNet"
+categories: [résultats, ablation]
+---
+
+::: {.callout-note}
