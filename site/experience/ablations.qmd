@@ -36,3 +36,21 @@ réseau. L'identité y parvient *directement*, avec un vecteur appris par nœud.
 
 L'identité **spatiale** porte l'essentiel du gain. Détails et interprétation des embeddings
 sur [L'indistinguabilité des échantillons](../concepts/indistinguabilite.qmd).
+
+## Ablation Graph WaveNet : d'où vient le graphe ?
+
+{{< include _tables/gwnet_ablation.md >}}
+
+![Les quatre variantes de Graph WaveNet.](../figures/results_ablation_gwnet.png){#fig-abl-gw}
+
+1. **Le graphe est indispensable à Graph WaveNet.** Sans lui, le TCN pur s'effondre à 4,45
+   (+26 % à 60 min) et s'arrête tôt (meilleure époque 64). Son architecture ne contient
+   aucun autre moyen de distinguer les nœuds.
+2. **Route ou appris, peu importe à 60 min.** Route seule 3,55, adaptative seule 3,50,
+   les deux 3,53. Les écarts entre variantes sont inférieurs à ce qu'une graine de plus
+   pourrait déplacer.
+3. **À court terme, la route aide.** À 15 min, route (2,72) < adaptative (2,76), et la
+   combinaison est la meilleure (2,69). La topologie réelle transporte l'information
+   *immédiate* des voisins.
+4. **À long terme, l'adaptative suffit.** Elle fait même légèrement mieux à 60 min. Une
+   matrice apprise sans aucun a priori égale la carte routière.
