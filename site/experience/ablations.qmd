@@ -54,3 +54,36 @@ sur [L'indistinguabilité des échantillons](../concepts/indistinguabilite.qmd).
    *immédiate* des voisins.
 4. **À long terme, l'adaptative suffit.** Elle fait même légèrement mieux à 60 min. Une
    matrice apprise sans aucun a priori égale la carte routière.
+
+## Le graphe appris ressemble-t-il à la route ?
+
+![Adjacence routière vs adjacence adaptative apprise, et distance routière des voisins appris.](../figures/results_adaptive_vs_road.png){#fig-adp}
+
+**Pas vraiment.**
+
+- La matrice apprise est **dense et diffuse**. Le poids maximal d'une ligne vaut 0,014 en
+  médiane, à peine 3 fois le poids uniforme (1/207 ≈ 0,005). Elle ne sélectionne pas
+  quelques voisins comme la route.
+- Elle a une **structure en colonnes** : certains nœuds « émetteurs » sont écoutés par
+  presque tous les autres. Ça ressemble davantage à un **mécanisme de contexte global**
+  (l'état général du réseau) qu'à une topologie.
+- Parmi les 5 voisins les plus pondérés de chaque nœud, **20 %** sont à 2 sauts routiers ou
+  moins, contre **16 %** pour 5 nœuds tirés au hasard. Le graphe appris est à peine plus
+  « routier » qu'un tirage aléatoire.
+
+::: {.callout-warning}
+## Conséquence pour un système réel
+Une adjacence apprise n'est **pas une carte interprétable du réseau**. Il ne faut pas la
+présenter aux opérateurs comme « les tronçons qui s'influencent ». C'est un paramètre de
+modèle, à versionner et à surveiller comme tel. La topologie routière reste la seule source
+de graphe *explicable* et *inductive* (utilisable pour un nœud nouveau).
+:::
+
+## Ce que les ablations disent de la décision
+
+| Question | Réponse sur METR-LA |
+|---|---|
+| Le gain du STGNN vient-il du graphe ? | **Oui** : sans graphe, −26 % |
+| Le graphe apporte-t-il plus que des identités ? | **Non** en moyenne : graphe ≈ identités (−21 % vs −22 %) |
+| Faut-il la carte routière ? | utile à court terme, remplaçable à 60 min |
+| Le graphe appris est-il interprétable ? | **Non** : diffus, peu aligné sur la route |
