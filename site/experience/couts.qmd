@@ -1,0 +1,24 @@
+---
+title: "Le coût de la complexité"
+subtitle: "Paramètres, temps d'entraînement, latence, mémoire"
+categories: [résultats, MLOps]
+---
+
+::: {.kpi-row}
+::: {.kpi}
+[× 9]{.v}
+[temps par époque, GWNet vs STID]{.l}
+:::
+::: {.kpi}
+[× 10]{.v}
+[temps jusqu'au meilleur modèle]{.l}
+:::
+::: {.kpi}
+[× 11 / × 119]{.v}
+[latence d'inférence, batch 1 / batch 64]{.l}
+:::
+::: {.kpi}
+[× 30]{.v}
+[mémoire GPU de pointe]{.l}
+:::
+:::
