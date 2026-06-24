@@ -1,0 +1,10 @@
+---
+title: "L'indistinguabilité des échantillons"
+subtitle: "Pourquoi un embedding d'identité vaut (presque) un graphe"
+categories: [concepts, STID]
+---
+
+::: {.lead-question}
+Un modèle qui ne voit que la dernière heure de vitesses d'un capteur peut-il savoir **de
+quel capteur** et **de quel moment** il s'agit ? Non. Et c'est le goulot d'étranglement.
+:::
