@@ -22,3 +22,7 @@ categories: [résultats, MLOps]
 [mémoire GPU de pointe]{.l}
 :::
 :::
+
+## Tableau des coûts
+
+{{< include _tables/costs.md >}}
