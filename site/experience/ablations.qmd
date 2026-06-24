@@ -5,3 +5,8 @@ categories: [résultats, ablation]
 ---
 
 ::: {.callout-note}
+## Le résultat en une phrase
+**Le graphe de Graph WaveNet et les identités de STID font le même travail.** Retirer l'un
+ou l'autre coûte environ 22 % de MAE à 60 min. Mais les identités coûtent 9 fois moins de
+calcul.
+:::
