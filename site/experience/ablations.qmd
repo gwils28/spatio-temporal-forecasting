@@ -27,3 +27,12 @@ C'est la démonstration expérimentale de la thèse de STID. Un modèle spatio-t
 d'abord **savoir distinguer les échantillons** : quel capteur, à quel moment. Le graphe y
 parvient *indirectement*, en injectant le contexte des voisins qui situe le nœud dans le
 réseau. L'identité y parvient *directement*, avec un vecteur appris par nœud.
+
+## Ablation STID
+
+{{< include _tables/stid_ablation.md >}}
+
+![Retirer les identités de STID.](../figures/results_ablation_stid.png){#fig-abl-stid}
+
+L'identité **spatiale** porte l'essentiel du gain. Détails et interprétation des embeddings
+sur [L'indistinguabilité des échantillons](../concepts/indistinguabilite.qmd).
