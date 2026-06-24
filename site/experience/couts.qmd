@@ -26,3 +26,9 @@ categories: [résultats, MLOps]
 ## Tableau des coûts
 
 {{< include _tables/costs.md >}}
+
+## Précision contre coût
+
+![Chaque point est un run. GWNet n'apparaît en bas qu'au prix d'un déplacement d'un ordre de grandeur vers la droite.](../figures/results_pareto.png){#fig-pareto}
+
+![Courbes d'apprentissage en temps réel (échelle log). STID atteint son plateau en quelques minutes, GWNet continue de progresser lentement.](../figures/results_learning_curves.png){#fig-lc}
