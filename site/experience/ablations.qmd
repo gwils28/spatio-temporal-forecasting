@@ -10,3 +10,20 @@ categories: [résultats, ablation]
 ou l'autre coûte environ 22 % de MAE à 60 min. Mais les identités coûtent 9 fois moins de
 calcul.
 :::
+
+## Deux leviers, même effet
+
+![Ce que rapporte chaque levier, à architecture fixée.](../figures/results_substitution.png){#fig-subst}
+
+| | Sans le levier | Avec | Gain | s / époque |
+|---|---|---|---|---|
+| STID : identités espace + temps | 4,53 | 3,54 | −22 % | 5,8 |
+| Graph WaveNet : graphe (route + adaptative) | 4,45 | 3,53 | −21 % | 53,8 |
+
+: MAE à 60 min. Les deux modèles « nus » (MLP, TCN) sont aussi mauvais l'un que l'autre, et
+les deux modèles « complets » aussi bons l'un que l'autre. {#tbl-subst}
+
+C'est la démonstration expérimentale de la thèse de STID. Un modèle spatio-temporel doit
+d'abord **savoir distinguer les échantillons** : quel capteur, à quel moment. Le graphe y
+parvient *indirectement*, en injectant le contexte des voisins qui situe le nœud dans le
+réseau. L'identité y parvient *directement*, avec un vecteur appris par nœud.
