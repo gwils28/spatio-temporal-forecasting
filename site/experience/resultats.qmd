@@ -1,0 +1,133 @@
+---
+title: "Résultats : STID vs Graph WaveNet"
+subtitle: "Le graphe gagne-t-il son pari sur METR-LA ?"
+categories: [résultats]
+---
+
+::: {.callout-important}
+## Verdict (critère fixé avant les résultats dans `SPEC.md`)
+**Non, au sens du critère pré-enregistré.** Graph WaveNet bat STID de **0,1 %** de MAE à
+60 min, loin du seuil de 3 %, pour un coût d'entraînement 10 fois plus élevé et une
+latence en batch 119 fois plus élevée. **La recommandation par défaut est STID.**
+
+**Mais le graphe n'est pas inutile.** Son gain est réel aux horizons courts (−4 % de MAE à
+15 min) et surtout **en congestion** : −23 % d'erreur sur les débuts de bouchon, −11 % de
+MAPE à 60 min. La MAE moyenne le masque, car 71 % du test est du trafic fluide.
+:::
+
+## Le tableau principal
+
+{{< include _tables/main.md >}}
+
+Les deux implémentations reproduisent la littérature. STID donne 2,80 / 3,17 / 3,54, contre
+≈ 2,82 / 3,19 / 3,55 dans BasicTS. Graph WaveNet donne **2,69 / 3,07 / 3,53**, exactement
+les chiffres de l'article original sur METR-LA. Les comparaisons qui suivent portent donc
+sur des modèles bien entraînés, pas sur des versions affaiblies.
+
+| Écart GWNet vs STID | 15 min | 30 min | 60 min |
+|---|---|---|---|
+| MAE | −4,0 % | −3,2 % | **−0,1 %** |
+| RMSE | −7,9 % | −7,1 % | −3,7 % |
+| MAPE | −9,8 % | −11,1 % | **−10,8 %** |
+
+: Gain relatif de Graph WaveNet (négatif = moins d'erreur). Calculé depuis `results/*/metrics.json`. {#tbl-gain}
+
+**Pourquoi les métriques divergent.** La MAE pèse chaque mph d'erreur pareil. Le RMSE pénalise
+les grosses erreurs. Le MAPE divise par la vitesse réelle, donc **amplifie les erreurs à
+basse vitesse, c'est-à-dire en congestion**. Un gain de MAPE de 11 % avec une MAE inchangée
+signifie que Graph WaveNet se trompe moins quand ça bouchonne, et un peu plus quand ça roule.
+
+## Par horizon
+
+![MAE pas à pas. Les deux modèles convergent à 60 min.](../figures/results_horizon.png){#fig-horizon}
+
+![Gain relatif de chaque variante sur STID. Seule la version complète dépasse nettement le seuil de 3 %, et seulement jusqu'à 30 min environ. La version route l'effleure à 10-15 min.](../figures/results_gain_vs_stid.png){#fig-gain}
+
+Le graphe aide **à court terme** : à 15 minutes, l'état des voisins est l'information la plus
+fraîche sur ce qui arrive. À 60 minutes, l'onde de congestion a eu le temps de traverser
+plusieurs capteurs, et la mémoire statistique (identités) rattrape le contexte spatial.
+
+## Par régime de trafic
+
+{{< include _tables/regimes.md >}}
+
+![Erreur à 60 min selon le régime de trafic.](../figures/results_regimes.png){#fig-regimes}
+
+C'est le résultat le plus utile pour un décideur :
+
+- **Début de congestion** (2,4 % du test) : STID se trompe de 23 mph en moyenne, *plus que
+  la moyenne historique* (18 mph). Il prédit que la route reste fluide. Graph WaveNet descend
+  à 17,9 mph, car il voit l'aval ralentir.
+- **Congestion installée** (8,3 %) : Graph WaveNet fait −20 % d'erreur (5,8 contre 7,2 mph).
+- **Trafic fluide** (71 %) et **résorption** : STID est meilleur. Graph WaveNet anticipe des
+  ralentissements qui n'arrivent pas, ou tarde à voir la reprise.
+
+::: {.callout-tip}
+## Lecture métier
+Pour un service de dispatch, une erreur de 20 mph au début d'un bouchon coûte beaucoup plus
+cher qu'une erreur de 0,2 mph sur une autoroute fluide : c'est un retard de livraison contre
+rien. **Si la fonction de coût métier est pondérée vers la congestion, le graphe gagne son
+pari.** Si elle est uniforme, il le perd. Le critère du SPEC (MAE moyenne) ne le voyait pas.
+C'est la leçon principale du projet (voir le verdict).
+:::
+
+## Par capteur
+
+![Différence d'erreur à 60 min par capteur. Le gain du graphe est concentré sur quelques tronçons.](../figures/results_sensor_gain.png){#fig-sensors}
+
+À 60 min, Graph WaveNet n'est meilleur que sur **32 % des capteurs**, mais ses gains sont
+plus gros que ses pertes (queue droite de l'histogramme). Les capteurs où il gagne forment
+des **segments contigus** sur la carte, pas des points isolés. C'est cohérent avec un signal
+qui se propage le long des tronçons ([analyse de propagation](../concepts/graphe-hypothese.qmd)).
+Il faudrait croiser ces segments avec les zones de congestion récurrente (carte des
+[données](donnees.qmd)) pour confirmer qu'il s'agit de l'amont des bouchons. C'est une
+piste, pas un résultat.
+
+## Selon l'heure
+
+![MAE à 60 min selon l'heure de la cible.](../figures/results_error_by_hour.png){#fig-hour}
+
+Les erreurs se concentrent aux pointes (7-9 h, 15-19 h). STID est meilleur au démarrage de
+la pointe du matin (7-8 h), quand la congestion est *récurrente* et donc portée par
+l'identité temporelle. Graph WaveNet gagne entre 10 h et 12 h et entre 15 h et 17 h.
+Hypothèse, non vérifiée ici : ces créneaux contiennent davantage de congestions
+**non récurrentes** (incidents), que seule l'observation des voisins peut anticiper.
+
+## Un exemple
+
+![Une journée sur un capteur, prévisions faites 60 min avant.](../figures/results_forecast_example.png){#fig-example}
+
+Graph WaveNet anticipe la congestion de 17 h, au prix d'une **fausse alerte** vers 16 h.
+STID réagit plus tard mais plus proprement. En miniature, c'est tout le compromis.
+
+## Verdict
+
+::: {.verdict}
+**Selon le critère pré-enregistré** (gain ≥ 3 % de MAE à 60 min **et** attribuable au
+graphe) :
+
+1. gain de MAE à 60 min : **0,1 %** → ✗ condition non remplie ;
+2. attribution au graphe : sans graphe, Graph WaveNet perd 26 % ([ablations](ablations.qmd)) → ✓.
+
+**Décision : STID par défaut.** Graph WaveNet reste un *challenger* légitime si la métrique
+métier valorise la congestion.
+:::
+
+**Ce que je changerais dans le protocole.** Le SPEC a fixé une métrique *statistique* (MAE
+moyenne) au lieu d'une métrique *métier*. Avec une MAE pondérée par le régime, ou mesurée
+seulement sur les débuts de congestion, la conclusion s'inverse. Fixer la métrique avant les
+résultats était juste. **Choisir la bonne métrique** demandait d'interroger le métier avant,
+pas les données après. Je ne change pas le verdict a posteriori. Je consigne la leçon, et la
+prochaine itération testera le critère pondéré **sur des données neuves**, par exemple
+PEMS-BAY.
+
+**Limites.**
+
+- **Une seule graine.** Un écart de 0,1 % est dans le bruit. Les écarts de 4 % (15 min) et
+  de 20 % (congestion) sont probablement robustes, mais ce n'est pas démontré.
+- **Un seul réseau** de 207 capteurs.
+- Graph WaveNet atteint son meilleur modèle à l'époque 94 sur 100 : un budget plus long
+  l'avantagerait peut-être légèrement.
+
+Pour les coûts : [Le coût de la complexité](couts.qmd). Pour l'origine du gain :
+[Ablations](ablations.qmd).

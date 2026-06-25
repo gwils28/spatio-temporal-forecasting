@@ -1,0 +1,89 @@
+---
+title: "Ablations : d'où vient la performance ?"
+subtitle: "Retirer les identités de STID, retirer ou changer le graphe de Graph WaveNet"
+categories: [résultats, ablation]
+---
+
+::: {.callout-note}
+## Le résultat en une phrase
+**Le graphe de Graph WaveNet et les identités de STID font le même travail.** Retirer l'un
+ou l'autre coûte environ 22 % de MAE à 60 min. Mais les identités coûtent 9 fois moins de
+calcul.
+:::
+
+## Deux leviers, même effet
+
+![Ce que rapporte chaque levier, à architecture fixée.](../figures/results_substitution.png){#fig-subst}
+
+| | Sans le levier | Avec | Gain | s / époque |
+|---|---|---|---|---|
+| STID : identités espace + temps | 4,53 | 3,54 | −22 % | 5,8 |
+| Graph WaveNet : graphe (route + adaptative) | 4,45 | 3,53 | −21 % | 53,8 |
+
+: MAE à 60 min. Les deux modèles « nus » (MLP, TCN) sont aussi mauvais l'un que l'autre, et
+les deux modèles « complets » aussi bons l'un que l'autre. {#tbl-subst}
+
+C'est la démonstration expérimentale de la thèse de STID. Un modèle spatio-temporel doit
+d'abord **savoir distinguer les échantillons** : quel capteur, à quel moment. Le graphe y
+parvient *indirectement*, en injectant le contexte des voisins qui situe le nœud dans le
+réseau. L'identité y parvient *directement*, avec un vecteur appris par nœud.
+
+## Ablation STID
+
+{{< include _tables/stid_ablation.md >}}
+
+![Retirer les identités de STID.](../figures/results_ablation_stid.png){#fig-abl-stid}
+
+L'identité **spatiale** porte l'essentiel du gain. Détails et interprétation des embeddings
+sur [L'indistinguabilité des échantillons](../concepts/indistinguabilite.qmd).
+
+## Ablation Graph WaveNet : d'où vient le graphe ?
+
+{{< include _tables/gwnet_ablation.md >}}
+
+![Les quatre variantes de Graph WaveNet.](../figures/results_ablation_gwnet.png){#fig-abl-gw}
+
+1. **Le graphe est indispensable à Graph WaveNet.** Sans lui, le TCN pur s'effondre à 4,45
+   (+26 % à 60 min) et s'arrête tôt (meilleure époque 64). Son architecture ne contient
+   aucun autre moyen de distinguer les nœuds.
+2. **Route ou appris, peu importe à 60 min.** Route seule 3,55, adaptative seule 3,50,
+   les deux 3,53. Les écarts entre variantes sont inférieurs à ce qu'une graine de plus
+   pourrait déplacer.
+3. **À court terme, la route aide.** À 15 min, route (2,72) < adaptative (2,76), et la
+   combinaison est la meilleure (2,69). La topologie réelle transporte l'information
+   *immédiate* des voisins.
+4. **À long terme, l'adaptative suffit.** Elle fait même légèrement mieux à 60 min. Une
+   matrice apprise sans aucun a priori égale la carte routière.
+
+## Le graphe appris ressemble-t-il à la route ?
+
+![Adjacence routière vs adjacence adaptative apprise, et distance routière des voisins appris.](../figures/results_adaptive_vs_road.png){#fig-adp}
+
+**Pas vraiment.**
+
+- La matrice apprise est **dense et diffuse**. Le poids maximal d'une ligne vaut 0,014 en
+  médiane, à peine 3 fois le poids uniforme (1/207 ≈ 0,005). Elle ne sélectionne pas
+  quelques voisins comme la route.
+- Elle a une **structure en colonnes** : certains nœuds « émetteurs » sont écoutés par
+  presque tous les autres. Ça ressemble davantage à un **mécanisme de contexte global**
+  (l'état général du réseau) qu'à une topologie.
+- Parmi les 5 voisins les plus pondérés de chaque nœud, **20 %** sont à 2 sauts routiers ou
+  moins, contre **16 %** pour 5 nœuds tirés au hasard. Le graphe appris est à peine plus
+  « routier » qu'un tirage aléatoire.
+
+::: {.callout-warning}
+## Conséquence pour un système réel
+Une adjacence apprise n'est **pas une carte interprétable du réseau**. Il ne faut pas la
+présenter aux opérateurs comme « les tronçons qui s'influencent ». C'est un paramètre de
+modèle, à versionner et à surveiller comme tel. La topologie routière reste la seule source
+de graphe *explicable* et *inductive* (utilisable pour un nœud nouveau).
+:::
+
+## Ce que les ablations disent de la décision
+
+| Question | Réponse sur METR-LA |
+|---|---|
+| Le gain du STGNN vient-il du graphe ? | **Oui** : sans graphe, −26 % |
+| Le graphe apporte-t-il plus que des identités ? | **Non** en moyenne : graphe ≈ identités (−21 % vs −22 %) |
+| Faut-il la carte routière ? | utile à court terme, remplaçable à 60 min |
+| Le graphe appris est-il interprétable ? | **Non** : diffus, peu aligné sur la route |
