@@ -72,3 +72,10 @@ Lecture :
 - **Identités « heure du jour ».** La projection trace une **boucle fermée**
   (0 h → 6 h → 8 h → 12 h → 17 h → 21 h → 0 h), avec des inflexions aux pointes. Le
   modèle a redécouvert la périodicité du trafic.
+
+## Limite : un nœud nouveau n'a pas d'identité
+
+L'embedding d'un capteur n'existe que s'il a été vu à l'entraînement. Pour un **nouveau
+hub logistique**, STID n'a rien à proposer sans réentraînement. Un STGNN peut, lui,
+s'appuyer sur la topologie routière. C'est le principal argument *structurel* en
+faveur du graphe, indépendamment de la précision. Voir le [System design](../system-design.qmd).
