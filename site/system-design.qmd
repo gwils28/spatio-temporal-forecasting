@@ -1,0 +1,7 @@
+---
+title: "System design : prévision spatio-temporelle pour un réseau logistique"
+subtitle: "Mini-décision d'architecture : nœuds = hubs, axes, zones"
+categories: [MLOps, architecture]
+---
+
+::: {.callout-note}
