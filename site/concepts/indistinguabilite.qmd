@@ -8,3 +8,17 @@ categories: [concepts, STID]
 Un modèle qui ne voit que la dernière heure de vitesses d'un capteur peut-il savoir **de
 quel capteur** et **de quel moment** il s'agit ? Non. Et c'est le goulot d'étranglement.
 :::
+
+## Le problème en une figure
+
+![Deux fenêtres d'entrée quasi identiques (écart RMS < 1 mph), deux futurs opposés : un capteur reste fluide la nuit, l'autre bouchonne à l'approche de la pointe du matin.](../figures/concept_indistinguishability.png){#fig-twins}
+
+Pour un modèle qui ne reçoit que ces 12 valeurs, les deux échantillons sont
+**indistinguables**. Il est donc contraint de prédire *la même chose* pour les deux, en
+pratique une moyenne des deux futurs, fausse dans les deux cas.
+
+Ces jumeaux ne sont pas rares. Dans le [notebook d'exploration](../experience/exploration.ipynb),
+sur 6 000 fenêtres tirées au hasard, on compte environ 36 000 paires dont les entrées
+diffèrent de moins de 1 mph RMS. **5,4 % d'entre elles divergent de plus de 10 mph à
+60 minutes.** Ce sont les débuts de congestion, c'est-à-dire précisément les cas qui
+comptent pour le dispatch.
