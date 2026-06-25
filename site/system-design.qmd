@@ -11,3 +11,36 @@ milliers de nœuds (hubs, tronçons, zones de livraison), un rafraîchissement t
 5 minutes, et un service de **dispatch** qui consomme les prévisions avec un budget de
 latence serré. Le raisonnement ci-dessous s'appuie sur nos [résultats](experience/resultats.qmd).
 :::
+
+## Le raisonnement en 12 lignes
+
+1. **Le graphe se mérite.** On part d'un graphe *prédéfini*, la topologie routière orientée
+   entre nœuds. C'est gratuit, interprétable, et ça donne l'inductivité pour les nouveaux nœuds.
+2. On ajoute une adjacence *apprise* seulement si l'ablation le justifie, toujours **contre STID** :
+   STGNN complet vs sans graphe vs route vs appris, sur un backtest glissant.
+3. **Règle de décision** : le STGNN n'est déployé que s'il bat STID **sur la métrique métier**
+   (erreur pondérée par le coût d'un retard, donc surtout en congestion), au-delà du bruit
+   inter-seed, *et* si le gain disparaît sans graphe. Sur METR-LA, le gain est nul en MAE
+   moyenne à 60 min mais de −23 % en début de congestion ([résultats](experience/resultats.qmd)).
+4. **Scalabilité** : STID est en $\mathcal{O}(N)$, trivialement parallélisable par nœud. Un
+   STGNN à adjacence dense apprise est en $\mathcal{O}(N^2)$. Au-delà de quelques milliers
+   de nœuds, il faut une adjacence creuse (top-k) ou un partitionnement en sous-graphes.
+5. **Latence dispatch** : servir en lot toutes les 5 minutes (batch scoring), puis exposer
+   un cache clé-valeur. Le dispatch lit une prévision déjà calculée et n'appelle jamais le
+   modèle en ligne.
+6. **Nouveau réseau ou nouveau hub sans historique** : un modèle de fondation pré-entraîné
+   (UrbanFM, OpenCity) en zero/few-shot sert de solution de démarrage. On bascule vers
+   l'expert local dès qu'il le bat en backtest.
+7. **Capteurs manquants** : masque explicite en entrée et dans la perte. On **n'impute pas
+   silencieusement à 0**. Repli sur la moyenne historique du créneau au-delà de N pas muets.
+8. **Capteurs bruités** : contrôles de plausibilité (bornes physiques, sauts), drapeau de
+   qualité par nœud propagé jusqu'au dispatch.
+9. **Changement de topologie** : avec STID, ajouter un nœud demande un réentraînement
+   (nouvel embedding). L'embedding peut être initialisé par la moyenne des voisins routiers.
+10. Avec un STGNN : mise à jour de l'adjacence routière, puis fine-tuning court.
+    L'adjacence apprise est versionnée comme un artefact du modèle.
+11. **Monitoring** : MAE par nœud et par horizon contre la moyenne historique (une borne
+    qui ne dérive pas), avec des alertes par zone. Le réentraînement est hebdomadaire et
+    déclenché aussi par la dérive.
+12. **Dette technique** : chaque brique de graphe (construction, versionnage, cohérence
+    avec les IDs de nœuds) est du code à maintenir. Elle doit être payée par un gain mesuré.
