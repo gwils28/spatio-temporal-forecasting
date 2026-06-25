@@ -22,3 +22,21 @@ sur 6 000 fenêtres tirées au hasard, on compte environ 36 000 paires dont les 
 diffèrent de moins de 1 mph RMS. **5,4 % d'entre elles divergent de plus de 10 mph à
 60 minutes.** Ce sont les débuts de congestion, c'est-à-dire précisément les cas qui
 comptent pour le dispatch.
+
+## Deux façons de lever l'ambiguïté
+
+```{mermaid}
+flowchart LR
+  Q["Fenêtre ambiguë<br/>(même entrée, futurs ≠)"] --> G["STGNN : regarder les voisins<br/>« l'aval ralentit déjà »"]
+  Q --> I["STID : dire qui et quand<br/>« capteur 764101, mercredi 5 h 55 »"]
+  G --> R["Futur désambiguïsé"]
+  I --> R
+```
+
+- Le **graphe** désambiguïse par le *contexte spatial courant*. Si les voisins en aval
+  ralentissent, la congestion arrive.
+- L'**identité** désambiguïse par la *mémoire statistique*. Ce capteur, à cette heure, ce
+  jour-là, bouchonne habituellement.
+
+La seconde est bien moins chère : une table de correspondance plutôt qu'un passage de
+messages sur le graphe à chaque couche.
