@@ -1,0 +1,12 @@
+---
+title: "Le graphe mérite-t-il sa complexité ?"
+subtitle: "Prévision spatio-temporelle sur réseau de capteurs : STID (sans graphe) vs Graph WaveNet (STGNN) sur METR-LA. Veille et expérimentation, cas logistique."
+page-layout: full
+toc: false
+---
+
+::: {.lead-question}
+Un STGNN suppose que la congestion se propage le long du réseau, et que cette structure
+porte du signal. Mais **le graphe est une hypothèse, pas une donnée**. Avant de payer son
+coût, il faut montrer qu'il bat un baseline *non-graphe* bien conçu.
+:::
