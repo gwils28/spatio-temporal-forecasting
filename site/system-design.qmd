@@ -44,3 +44,74 @@ latence serré. Le raisonnement ci-dessous s'appuie sur nos [résultats](experie
     déclenché aussi par la dérive.
 12. **Dette technique** : chaque brique de graphe (construction, versionnage, cohérence
     avec les IDs de nœuds) est du code à maintenir. Elle doit être payée par un gain mesuré.
+
+## Schéma
+
+```{mermaid}
+flowchart LR
+  subgraph SRC["Sources"]
+    S1["Télémétrie flotte<br/>GPS 1 min"]
+    S2["Capteurs axes<br/>5 min"]
+    S3["Référentiel réseau<br/>hubs, tronçons"]
+  end
+  subgraph ING["Ingestion & qualité"]
+    Q["Agrégation 5 min<br/>contrôles de plausibilité<br/>masque de manquants"]
+    GB["Graph builder<br/>adjacence orientée versionnée"]
+  end
+  subgraph FS["Feature store"]
+    F1["Fenêtres 12 pas<br/>+ heure / jour"]
+    F2["Embeddings nœuds<br/>+ registre IDs"]
+  end
+  subgraph TR["Entraînement (hebdo + dérive)"]
+    T1["STID (champion)"]
+    T2["STGNN (challenger)"]
+    T3["FM zero/few-shot<br/>(nœuds neufs)"]
+    AB{"Backtest glissant<br/>règle de décision"}
+  end
+  subgraph SRV["Service"]
+    B["Batch scoring<br/>toutes les 5 min"]
+    C[("Cache prévisions<br/>nœud × horizon")]
+    D["Dispatch / ETA"]
+  end
+  MON["Monitoring<br/>MAE par nœud, horizon<br/>vs moyenne historique"]
+  S1 & S2 --> Q --> F1
+  S3 --> GB --> F2
+  GB --> T2
+  F1 & F2 --> T1 & T2 & T3 --> AB --> B --> C --> D
+  C --> MON --> TR
+```
+
+## Trois décisions détaillées
+
+### 1. D'où vient le graphe ?
+
+| Option | Quand | Validation |
+|---|---|---|
+| Topologie routière orientée | par défaut | ablation `gwnet_road` vs `gwnet_nograph` |
+| Adjacence apprise | si gain mesuré ; réseau sans référentiel propre | ablation `gwnet_adaptive` ; stabilité de Ã entre réentraînements |
+| Pas de graphe (STID) | si l'ablation ne montre pas de gain significatif | c'est le **baseline**, toujours entraîné |
+
+### 2. STGNN vs modèle de fondation à l'échelle
+
+| Critère | STGNN expert | STID expert | FM pré-entraîné |
+|---|---|---|---|
+| Précision (réseau à historique riche) | ★★★ | ★★★ | ★★ (à vérifier sur ses données) |
+| Nœud / réseau nouveau | ★★ (via la route) | ★ | ★★★ (zero-shot) |
+| Coût d'entraînement | moyen | **faible** | énorme (pré-entraînement), faible (fine-tuning) |
+| Latence d'inférence | moyenne | **faible** | élevée |
+| Explicabilité | adjacence inspectable | embeddings | faible |
+
+### 3. Robustesse
+
+```{mermaid}
+stateDiagram-v2
+  [*] --> Nominal
+  Nominal --> Degrade : capteur muet ≤ 30 min
+  Degrade --> Nominal : retour des données
+  Degrade --> Repli : muet > 30 min
+  Repli --> Nominal : retour + 1 h de données
+  Nominal --> Reentrainement : nouveau hub / dérive MAE
+  Reentrainement --> Nominal : challenger validé en backtest
+  note right of Degrade : entrée masquée, prévision<br/>+ drapeau qualité
+  note right of Repli : moyenne historique<br/>du créneau
+```
