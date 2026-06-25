@@ -40,3 +40,23 @@ flowchart LR
 
 La seconde est bien moins chère : une table de correspondance plutôt qu'un passage de
 messages sur le graphe à chaque couche.
+
+## Ce que l'ablation dit sur METR-LA
+
+{{< include ../experience/_tables/stid_ablation.md >}}
+
+![Retirer les identités, à chaque horizon.](../figures/results_ablation_stid.png){#fig-abl}
+
+Lecture :
+
+1. **L'identité spatiale est décisive.** Sans elle, la MAE à 60 min passe de 3,54 à
+   **4,39** (+24 %). C'est la même hiérarchie que l'article STID sur PEMS04.
+2. **L'écart grandit avec l'horizon** : +6 % à 15 min, +24 % à 60 min. À court terme, la
+   fenêtre récente suffit. À long terme, il faut savoir « qui » l'on prévoit.
+3. **Les identités temporelles apportent peu ici** (3,54 → 3,60). Ce n'est **pas** parce
+   que l'heure est inutile, mais parce que, comme dans BasicTS, l'entrée contient déjà
+   l'heure et le jour en **canaux bruts** (`input_dim = 3`). L'information temporelle
+   reste donc accessible. Les embeddings la rendent seulement plus facile à exploiter.
+4. Un MLP **sans aucune identité** fait *moins bien* à 60 min que la simple moyenne
+   historique (4,53 contre 4,19). Sans savoir « qui » ni « quand », un réseau de neurones
+   perd face à une table de moyennes qui, elle, est indexée par capteur et par créneau.
