@@ -118,3 +118,10 @@ et les écarts au plan dans les
   des chutes à 0.
 - Adjacence apprise : diffuse, structurée en colonnes, à peine plus « routière » qu'un
   tirage aléatoire (20 % contre 16 % des top-5 voisins à 2 sauts ou moins).
+
+## 25 juin 2026 — Verdict
+
+- **Selon le critère pré-enregistré : STID.** Le graphe ne bat pas STID de 3 % de MAE à 60 min.
+- **Leçon** : le critère portait sur une métrique statistique (MAE moyenne). Une métrique
+  métier pondérée vers la congestion inverserait la conclusion. Je ne change pas le
+  verdict a posteriori, je consigne la leçon pour la prochaine itération.
