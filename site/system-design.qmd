@@ -1,0 +1,117 @@
+---
+title: "System design : prévision spatio-temporelle pour un réseau logistique"
+subtitle: "Mini-décision d'architecture : nœuds = hubs, axes, zones"
+categories: [MLOps, architecture]
+---
+
+::: {.callout-note}
+## Contexte
+Un opérateur logistique veut prévoir les **temps de parcours** sur son réseau : quelques
+milliers de nœuds (hubs, tronçons, zones de livraison), un rafraîchissement toutes les
+5 minutes, et un service de **dispatch** qui consomme les prévisions avec un budget de
+latence serré. Le raisonnement ci-dessous s'appuie sur nos [résultats](experience/resultats.qmd).
+:::
+
+## Le raisonnement en 12 lignes
+
+1. **Le graphe se mérite.** On part d'un graphe *prédéfini*, la topologie routière orientée
+   entre nœuds. C'est gratuit, interprétable, et ça donne l'inductivité pour les nouveaux nœuds.
+2. On ajoute une adjacence *apprise* seulement si l'ablation le justifie, toujours **contre STID** :
+   STGNN complet vs sans graphe vs route vs appris, sur un backtest glissant.
+3. **Règle de décision** : le STGNN n'est déployé que s'il bat STID **sur la métrique métier**
+   (erreur pondérée par le coût d'un retard, donc surtout en congestion), au-delà du bruit
+   inter-seed, *et* si le gain disparaît sans graphe. Sur METR-LA, le gain est nul en MAE
+   moyenne à 60 min mais de −23 % en début de congestion ([résultats](experience/resultats.qmd)).
+4. **Scalabilité** : STID est en $\mathcal{O}(N)$, trivialement parallélisable par nœud. Un
+   STGNN à adjacence dense apprise est en $\mathcal{O}(N^2)$. Au-delà de quelques milliers
+   de nœuds, il faut une adjacence creuse (top-k) ou un partitionnement en sous-graphes.
+5. **Latence dispatch** : servir en lot toutes les 5 minutes (batch scoring), puis exposer
+   un cache clé-valeur. Le dispatch lit une prévision déjà calculée et n'appelle jamais le
+   modèle en ligne.
+6. **Nouveau réseau ou nouveau hub sans historique** : un modèle de fondation pré-entraîné
+   (UrbanFM, OpenCity) en zero/few-shot sert de solution de démarrage. On bascule vers
+   l'expert local dès qu'il le bat en backtest.
+7. **Capteurs manquants** : masque explicite en entrée et dans la perte. On **n'impute pas
+   silencieusement à 0**. Repli sur la moyenne historique du créneau au-delà de N pas muets.
+8. **Capteurs bruités** : contrôles de plausibilité (bornes physiques, sauts), drapeau de
+   qualité par nœud propagé jusqu'au dispatch.
+9. **Changement de topologie** : avec STID, ajouter un nœud demande un réentraînement
+   (nouvel embedding). L'embedding peut être initialisé par la moyenne des voisins routiers.
+10. Avec un STGNN : mise à jour de l'adjacence routière, puis fine-tuning court.
+    L'adjacence apprise est versionnée comme un artefact du modèle.
+11. **Monitoring** : MAE par nœud et par horizon contre la moyenne historique (une borne
+    qui ne dérive pas), avec des alertes par zone. Le réentraînement est hebdomadaire et
+    déclenché aussi par la dérive.
+12. **Dette technique** : chaque brique de graphe (construction, versionnage, cohérence
+    avec les IDs de nœuds) est du code à maintenir. Elle doit être payée par un gain mesuré.
+
+## Schéma
+
+```{mermaid}
+flowchart LR
+  subgraph SRC["Sources"]
+    S1["Télémétrie flotte<br/>GPS 1 min"]
+    S2["Capteurs axes<br/>5 min"]
+    S3["Référentiel réseau<br/>hubs, tronçons"]
+  end
+  subgraph ING["Ingestion & qualité"]
+    Q["Agrégation 5 min<br/>contrôles de plausibilité<br/>masque de manquants"]
+    GB["Graph builder<br/>adjacence orientée versionnée"]
+  end
+  subgraph FS["Feature store"]
+    F1["Fenêtres 12 pas<br/>+ heure / jour"]
+    F2["Embeddings nœuds<br/>+ registre IDs"]
+  end
+  subgraph TR["Entraînement (hebdo + dérive)"]
+    T1["STID (champion)"]
+    T2["STGNN (challenger)"]
+    T3["FM zero/few-shot<br/>(nœuds neufs)"]
+    AB{"Backtest glissant<br/>règle de décision"}
+  end
+  subgraph SRV["Service"]
+    B["Batch scoring<br/>toutes les 5 min"]
+    C[("Cache prévisions<br/>nœud × horizon")]
+    D["Dispatch / ETA"]
+  end
+  MON["Monitoring<br/>MAE par nœud, horizon<br/>vs moyenne historique"]
+  S1 & S2 --> Q --> F1
+  S3 --> GB --> F2
+  GB --> T2
+  F1 & F2 --> T1 & T2 & T3 --> AB --> B --> C --> D
+  C --> MON --> TR
+```
+
+## Trois décisions détaillées
+
+### 1. D'où vient le graphe ?
+
+| Option | Quand | Validation |
+|---|---|---|
+| Topologie routière orientée | par défaut | ablation `gwnet_road` vs `gwnet_nograph` |
+| Adjacence apprise | si gain mesuré ; réseau sans référentiel propre | ablation `gwnet_adaptive` ; stabilité de Ã entre réentraînements |
+| Pas de graphe (STID) | si l'ablation ne montre pas de gain significatif | c'est le **baseline**, toujours entraîné |
+
+### 2. STGNN vs modèle de fondation à l'échelle
+
+| Critère | STGNN expert | STID expert | FM pré-entraîné |
+|---|---|---|---|
+| Précision (réseau à historique riche) | ★★★ | ★★★ | ★★ (à vérifier sur ses données) |
+| Nœud / réseau nouveau | ★★ (via la route) | ★ | ★★★ (zero-shot) |
+| Coût d'entraînement | moyen | **faible** | énorme (pré-entraînement), faible (fine-tuning) |
+| Latence d'inférence | moyenne | **faible** | élevée |
+| Explicabilité | adjacence inspectable | embeddings | faible |
+
+### 3. Robustesse
+
+```{mermaid}
+stateDiagram-v2
+  [*] --> Nominal
+  Nominal --> Degrade : capteur muet ≤ 30 min
+  Degrade --> Nominal : retour des données
+  Degrade --> Repli : muet > 30 min
+  Repli --> Nominal : retour + 1 h de données
+  Nominal --> Reentrainement : nouveau hub / dérive MAE
+  Reentrainement --> Nominal : challenger validé en backtest
+  note right of Degrade : entrée masquée, prévision<br/>+ drapeau qualité
+  note right of Repli : moyenne historique<br/>du créneau
+```
