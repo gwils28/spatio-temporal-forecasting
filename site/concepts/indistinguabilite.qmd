@@ -60,3 +60,15 @@ Lecture :
 4. Un MLP **sans aucune identité** fait *moins bien* à 60 min que la simple moyenne
    historique (4,53 contre 4,19). Sans savoir « qui » ni « quand », un réseau de neurones
    perd face à une table de moyennes qui, elle, est indexée par capteur et par créneau.
+
+## Ce que STID a appris
+
+![Analyse en composantes principales des identités apprises.](../figures/results_embeddings.png){#fig-emb}
+
+- **Identités spatiales.** La première composante est fortement corrélée à la vitesse
+  moyenne du capteur (corrélation de −0,73). Les capteurs chroniquement congestionnés
+  forment une queue distincte. Sur la carte, ils se regroupent sur les mêmes tronçons.
+  L'embedding a donc appris une **géographie fonctionnelle** sans jamais voir le graphe.
+- **Identités « heure du jour ».** La projection trace une **boucle fermée**
+  (0 h → 6 h → 8 h → 12 h → 17 h → 21 h → 0 h), avec des inflexions aux pointes. Le
+  modèle a redécouvert la périodicité du trafic.
