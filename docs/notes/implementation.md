@@ -53,3 +53,9 @@ apprise. C'est ce qui permet l'ablation « d'où vient le graphe ».
 Patience de 30 époques, 100 au maximum. Les articles entraînent 100 époques fixes et
 gardent la meilleure validation. Avec une patience de 30, le résultat est identique dès
 lors que la meilleure époque est atteinte avant l'arrêt, ce que les courbes confirment.
+
+## Masque en entrée
+
+Les zéros (pannes) sont masqués dans la perte et les métriques, mais **pas imputés en
+entrée**, comme dans le protocole de référence. Un modèle de production devrait recevoir
+un canal de masque explicite (voir System design).
