@@ -5,3 +5,9 @@ categories: [MLOps, architecture]
 ---
 
 ::: {.callout-note}
+## Contexte
+Un opérateur logistique veut prévoir les **temps de parcours** sur son réseau : quelques
+milliers de nœuds (hubs, tronçons, zones de livraison), un rafraîchissement toutes les
+5 minutes, et un service de **dispatch** qui consomme les prévisions avec un budget de
+latence serré. Le raisonnement ci-dessous s'appuie sur nos [résultats](experience/resultats.qmd).
+:::
