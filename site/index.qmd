@@ -66,3 +66,9 @@ métier pondère ces situations. [→ Résultats détaillés](experience/resulta
 3. **Fixer la métrique avant les résultats ne suffit pas : il faut fixer la *bonne*.**
    La métrique de décision doit venir du coût métier (retard de livraison), pas de l'habitude
    du benchmark.
+
+## Reproduire
+
+Code, tests et instructions : [github.com/gwils28/spatio-temporal-forecasting](https://github.com/gwils28/spatio-temporal-forecasting).
+Huit entraînements prennent environ 3 h sur un GPU portable, et 24 tests unitaires
+tournent en moins d'une seconde.
