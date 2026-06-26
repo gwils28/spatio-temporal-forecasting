@@ -10,3 +10,32 @@ Un STGNN suppose que la congestion se propage le long du réseau, et que cette s
 porte du signal. Mais **le graphe est une hypothèse, pas une donnée**. Avant de payer son
 coût, il faut montrer qu'il bat un baseline *non-graphe* bien conçu.
 :::
+
+## La réponse courte
+
+::: {.kpi-row}
+::: {.kpi}
+[3,54 vs 3,53]{.v}
+[MAE à 60 min (mph), STID vs Graph WaveNet]{.l}
+:::
+::: {.kpi}
+[−4 %]{.v}
+[erreur à 15 min avec le graphe]{.l}
+:::
+::: {.kpi}
+[−23 %]{.v}
+[erreur en début de congestion avec le graphe]{.l}
+:::
+::: {.kpi}
+[× 10 / × 119]{.v}
+[coût d'entraînement / latence batch du graphe]{.l}
+:::
+:::
+
+**Au sens du critère fixé à l'avance, le graphe ne gagne pas son pari** sur METR-LA : même
+précision moyenne à 60 min, pour un coût d'un ordre de grandeur supérieur. **STID est la
+recommandation par défaut.** Le graphe apporte pourtant un gain réel là où le dispatch en a le
+plus besoin, à court terme et au début des bouchons. Il redevient compétitif si la métrique
+métier pondère ces situations. [→ Résultats détaillés](experience/resultats.qmd)
+
+![Deux leviers, même effet : les identités de STID et le graphe de Graph WaveNet réduisent tous deux l'erreur d'environ 22 %.](figures/results_substitution.png){#fig-hero}
