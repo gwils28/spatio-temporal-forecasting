@@ -39,3 +39,19 @@ plus besoin, à court terme et au début des bouchons. Il redevient compétitif 
 métier pondère ces situations. [→ Résultats détaillés](experience/resultats.qmd)
 
 ![Deux leviers, même effet : les identités de STID et le graphe de Graph WaveNet réduisent tous deux l'erreur d'environ 22 %.](figures/results_substitution.png){#fig-hero}
+
+## Parcourir le site
+
+| | Page | Pourquoi la lire |
+|---|---|---|
+| 🔭 | [Modèles de fondation ST](veille/foundation-models.qmd) | où va le domaine : survey STFM et UrbanFM (2026) |
+| 🔭 | [STID](veille/stid.qmd) | le baseline anti-hype, et ce qu'il dit des STGNN |
+| 📖 | [Lecture : DCRNN](veille/dcrnn.qmd) | le papier fondateur, ce qui a vieilli, ce qui reste |
+| 💡 | [Le graphe est une hypothèse](concepts/graphe-hypothese.qmd) | d'où vient l'adjacence, et comment la valider |
+| 💡 | [L'indistinguabilité](concepts/indistinguabilite.qmd) | pourquoi un embedding d'identité vaut presque un graphe |
+| 💡 | [Diffusion](concepts/diffusion.qmd) · [Architectures](concepts/architectures.qmd) | les mécanismes, en équations et en code |
+| 🧪 | [Données](experience/donnees.qmd) · [Notebook](experience/exploration.ipynb) | METR-LA : réseau, dynamique, trous, propagation |
+| 🧪 | [Protocole](experience/protocole.qmd) | fixé avant les résultats |
+| 📊 | [Résultats](experience/resultats.qmd) · [Ablations](experience/ablations.qmd) · [Coûts](experience/couts.qmd) | le verdict, et d'où il vient |
+| 🏗️ | [System design](system-design.qmd) | prévision ST pour un réseau logistique |
+| 🗒️ | [Journal](journal.qmd) | déroulé daté du projet |
