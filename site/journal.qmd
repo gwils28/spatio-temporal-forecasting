@@ -125,3 +125,11 @@ et les écarts au plan dans les
 - **Leçon** : le critère portait sur une métrique statistique (MAE moyenne). Une métrique
   métier pondérée vers la congestion inverserait la conclusion. Je ne change pas le
   verdict a posteriori, je consigne la leçon pour la prochaine itération.
+
+## 26 juin 2026 — System design et clôture
+
+- System design : STID champion, STGNN challenger évalué sur la métrique métier, modèle de
+  fondation pour les nouveaux nœuds, masque explicite des capteurs muets.
+- Pistes ouvertes : 3 graines sur `stid` et `gwnet`, métrique pondérée par régime, test de
+  transfert sur PEMS-BAY, STID avec embedding de nœud initialisé par la topologie (pour les
+  nouveaux hubs).
