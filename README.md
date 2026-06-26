@@ -62,3 +62,10 @@ Même MAE à 60 min, pour un coût d'entraînement 10 fois plus élevé et une l
 congestion (−23 % d'erreur)**. Graphe et identités apprises sont deux leviers substituables
 pour lever l'indistinguabilité des échantillons.
 → [Résultats détaillés](https://gwils28.github.io/spatio-temporal-forecasting/experience/resultats.html)
+
+## Méthode de travail
+
+Projet mené avec Claude Code selon une méthode explicite : interview de cadrage → `SPEC.md`,
+`CLAUDE.md` court (commandes, invariants), notes d'implémentation pour toute déviation,
+vérification en échelle (tests, lint, recoupement avec les chiffres publiés), et tout
+chiffre publié tracé vers `results/` ou une source citée.
