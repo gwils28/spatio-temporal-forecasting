@@ -55,3 +55,14 @@ métier pondère ces situations. [→ Résultats détaillés](experience/resulta
 | 📊 | [Résultats](experience/resultats.qmd) · [Ablations](experience/ablations.qmd) · [Coûts](experience/couts.qmd) | le verdict, et d'où il vient |
 | 🏗️ | [System design](system-design.qmd) | prévision ST pour un réseau logistique |
 | 🗒️ | [Journal](journal.qmd) | déroulé daté du projet |
+
+## Les trois idées à retenir
+
+1. **Toujours entraîner STID d'abord.** Il atteint en 8 minutes le niveau d'un STGNN
+   entraîné 80 minutes. C'est la barre que tout modèle à graphe doit franchir.
+2. **Le graphe et les identités sont substituables en moyenne**, mais pas dans les
+   situations rares. Mesurer par régime (fluide, début de congestion, congestion, résorption),
+   pas seulement en moyenne.
+3. **Fixer la métrique avant les résultats ne suffit pas : il faut fixer la *bonne*.**
+   La métrique de décision doit venir du coût métier (retard de livraison), pas de l'habitude
+   du benchmark.
