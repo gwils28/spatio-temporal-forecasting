@@ -69,3 +69,13 @@ Projet mené avec Claude Code selon une méthode explicite : interview de cadrag
 `CLAUDE.md` court (commandes, invariants), notes d'implémentation pour toute déviation,
 vérification en échelle (tests, lint, recoupement avec les chiffres publiés), et tout
 chiffre publié tracé vers `results/` ou une source citée.
+
+## Références
+
+- Li, Yu, Shahabi, Liu (2018). *Diffusion Convolutional Recurrent Neural Network.* ICLR. [arXiv:1707.01926](https://arxiv.org/abs/1707.01926)
+- Wu, Pan, Long, Jiang, Zhang (2019). *Graph WaveNet for Deep Spatial-Temporal Graph Modeling.* IJCAI. [arXiv:1906.00121](https://arxiv.org/abs/1906.00121)
+- Shao, Zhang, Wang, Wei, Xu (2022). *Spatial-Temporal Identity: A Simple yet Effective Baseline.* CIKM. [arXiv:2208.05233](https://arxiv.org/abs/2208.05233)
+- Liang et al. (2025). *Foundation Models for Spatio-Temporal Data Science: A Tutorial and Survey.* [arXiv:2503.13502](https://arxiv.org/abs/2503.13502)
+- Chen et al. (2026). *UrbanFM: Scaling Urban Spatio-Temporal Foundation Models.* [arXiv:2602.20677](https://arxiv.org/abs/2602.20677)
+
+Licence MIT.
