@@ -148,7 +148,7 @@ def pareto(names):
         viz.plain_log_ticks(ax)
         ax.set_xlabel(xl)
         ax.set_ylabel("MAE à 60 min (mph)")
-    fig.suptitle("Précision vs coût — en bas à gauche, c'est mieux (taille ∝ paramètres)", x=0.01, ha="left",
+    fig.suptitle("Précision vs coût : en bas à gauche, c'est mieux (taille ∝ paramètres)", x=0.01, ha="left",
                  fontweight="bold")
     fig.tight_layout()
     viz.save(fig, OUT / "results_pareto.png")
@@ -194,7 +194,7 @@ def substitution():
     ax.set_ylim(-0.5, 1.6)
     ax.set_xlim(3.3, 4.7)
     ax.invert_xaxis()
-    ax.set_xlabel("MAE à 60 min (mph) — vers la droite, c'est mieux")
+    ax.set_xlabel("MAE à 60 min (mph) : vers la droite, c'est mieux")
     ax.grid(axis="y", visible=False)
     ax.set_title("Deux leviers, même effet : lever l'indistinguabilité")
     viz.save(fig, OUT / "results_substitution.png")

@@ -1,4 +1,4 @@
-# STID — hyperparamètres de BasicTS pour METR-LA
+# STID : hyperparamètres de BasicTS pour METR-LA
 name: stid
 model: stid
 seed: 0

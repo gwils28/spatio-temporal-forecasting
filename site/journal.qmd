@@ -9,7 +9,7 @@ fond sont dans [`SPEC.md`](https://github.com/gwils28/spatio-temporal-forecastin
 et les écarts au plan dans les
 [notes d'implémentation](https://github.com/gwils28/spatio-temporal-forecasting/blob/main/docs/notes/implementation.md).
 
-## 21 mai 2026 — Cadrage
+## 21 mai 2026 : Cadrage
 
 - Point de départ : une esquisse de plan (veille STFM / STID, code STID vs STGNN, system
   design, lecture DCRNN).
@@ -22,7 +22,7 @@ et les écarts au plan dans les
 - Vérification des quatre références sur arXiv. Correction d'une idée reçue : l'article
   STID **n'évalue pas METR-LA**. Les chiffres STID / METR-LA viennent de BasicTS.
 
-## 27 mai 2026 — Données : le piège HDF5
+## 27 mai 2026 : Données : le piège HDF5
 
 - `metr-la.h5` téléchargé depuis le Google Drive référencé par le dépôt DCRNN, et le graphe
   depuis `data/sensor_graph/`.
@@ -32,7 +32,7 @@ et les écarts au plan dans les
 - 34 272 pas × 207 capteurs, **8,1 % de zéros**, qui sont des pannes et pas des
   embouteillages.
 
-## 30 mai 2026 — Métriques, baselines, protocole validé
+## 30 mai 2026 : Métriques, baselines, protocole validé
 
 - Métriques masquées (zéros exclus) aux pas 3, 6 et 12.
 - **Moyenne historique : 4,19 de MAE**, contre 4,16 dans DCRNN. Le split, le masque et les
@@ -40,21 +40,21 @@ et les écarts au plan dans les
   passe.
 - Persistance : 3,71 → 6,14 de 15 à 60 min. Elle bat la moyenne historique jusqu'à ≈ 20 min.
 
-## 1er juin 2026 — Lecture DCRNN, supports de diffusion
+## 1er juin 2026 : Lecture DCRNN, supports de diffusion
 
 - Lecture complète de DCRNN : diffusion **bidirectionnelle** sur graphe orienté, DCGRU,
   seq2seq, scheduled sampling.
 - Implémentation des transitions $D_O^{-1}W$ et $D_I^{-1}W^\top$, réutilisées telles quelles
   par Graph WaveNet.
 
-## 2 juin 2026 — STID réécrit
+## 2 juin 2026 : STID réécrit
 
 - STID en ~100 lignes : embedding de fenêtre, trois identités apprises, trois blocs MLP
   résiduels.
 - Test qui fixe l'intuition : même fenêtre sur deux capteurs → même prédiction sans
   identité, prédictions différentes avec.
 
-## 3 juin 2026 — STID reproduit
+## 3 juin 2026 : STID reproduit
 
 - Smoke test : **STID 1,3 s par époque, Graph WaveNet 34 s**. L'écart de coût est visible
   dès la première minute.
@@ -62,7 +62,7 @@ et les écarts au plan dans les
 - **STID : 2,80 / 3,17 / 3,54**, contre ≈ 2,82 / 3,19 / 3,55 dans BasicTS. Implémentation
   validée.
 
-## 4 juin 2026 — Ablation STID : l'identité spatiale décide
+## 4 juin 2026 : Ablation STID : l'identité spatiale décide
 
 - Sans identité spatiale, 4,39 à 60 min (+24 %). Sans aucune identité, 4,53, **pire que la
   moyenne historique**.
@@ -70,14 +70,14 @@ et les écarts au plan dans les
   présents en canaux bruts d'entrée (`input_dim = 3`). C'est noté pour ne pas
   sur-interpréter.
 
-## 8 juin 2026 — Graph WaveNet implémenté
+## 8 juin 2026 : Graph WaveNet implémenté
 
 - ~150 lignes : TCN dilaté à porte, diffusion multi-supports, adjacence adaptative.
 - Supports configurables (route, adaptative, les deux, aucun) pour l'ablation.
 - Test clé : sans graphe, perturber le capteur 0 ne change **rien** à la prédiction du
   capteur 1.
 
-## 10 juin 2026 — Graph WaveNet : exactement l'article, et une surprise
+## 10 juin 2026 : Graph WaveNet : exactement l'article, et une surprise
 
 - **2,69 / 3,07 / 3,53**, exactement les chiffres de l'article original.
 - Face à STID : −4 % de MAE à 15 min, mais **−0,1 % à 60 min**. Sous le seuil de 3 % du SPEC.
@@ -87,7 +87,7 @@ et les écarts au plan dans les
 - Ablation : sans graphe, Graph WaveNet tombe à 4,45, presque comme STID sans identités
   (4,53). **Graphe et identités sont deux leviers substituables.**
 
-## 11 juin 2026 — Exploration : la congestion remonte le flux
+## 11 juin 2026 : Exploration : la congestion remonte le flux
 
 - Corrélation croisée des variations de vitesse sur les arêtes orientées : **31 %** ont un
   pic où l'aval ralentit *avant* l'amont, contre 5 % dans l'autre sens. C'est l'onde de choc
@@ -97,19 +97,19 @@ et les écarts au plan dans les
 - Première version de la figure trompeuse (le décalage 0 était coloré comme les décalages
   négatifs), refaite.
 
-## 13 juin 2026 — Pages de veille
+## 13 juin 2026 : Pages de veille
 
 - Survey STFM : taxonomie workflow × méthodologie, et les familles STEP, GPT-ST, OpenCity.
 - UrbanFM : vérifié dans le texte (WorldST, MiniST, attention factorisée). Les gains
   zero-shot chiffrés sont marqués « à confirmer », car issus d'un résumé.
 
-## 18 juin 2026 — Pages concepts
+## 18 juin 2026 : Pages concepts
 
 - Figure de diffusion d'une impulsion sur le **vrai** graphe METR-LA, en aval et en amont.
 - Page indistinguabilité : 5,4 % des paires de fenêtres jumelles divergent de plus de
   10 mph à 60 min.
 
-## 20 juin 2026 — Figures de résultats générées
+## 20 juin 2026 : Figures de résultats générées
 
 - Toutes les tables du site sont **générées** depuis `results/`. Aucun chiffre n'est recopié
   à la main.
@@ -119,14 +119,14 @@ et les écarts au plan dans les
 - Adjacence apprise : diffuse, structurée en colonnes, à peine plus « routière » qu'un
   tirage aléatoire (20 % contre 16 % des top-5 voisins à 2 sauts ou moins).
 
-## 25 juin 2026 — Verdict
+## 25 juin 2026 : Verdict
 
 - **Selon le critère pré-enregistré : STID.** Le graphe ne bat pas STID de 3 % de MAE à 60 min.
 - **Leçon** : le critère portait sur une métrique statistique (MAE moyenne). Une métrique
   métier pondérée vers la congestion inverserait la conclusion. Je ne change pas le
   verdict a posteriori, je consigne la leçon pour la prochaine itération.
 
-## 26 juin 2026 — System design et clôture
+## 26 juin 2026 : System design et clôture
 
 - System design : STID champion, STGNN challenger évalué sur la métrique métier, modèle de
   fondation pour les nouveaux nœuds, masque explicite des capteurs muets.

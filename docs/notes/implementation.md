@@ -1,4 +1,4 @@
-# Notes d'implémentation — déviations et choix conservateurs
+# Notes d'implémentation : déviations et choix conservateurs
 
 Ce fichier consigne ce qui s'écarte de l'esquisse initiale, et pourquoi. Un écart non
 consigné est un écart caché.

@@ -15,7 +15,7 @@ BLUE_RAMP = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "
 SEQ = LinearSegmentedColormap.from_list("seq_blue", BLUE_RAMP)
 DIV = LinearSegmentedColormap.from_list("div_blue_red", ["#184f95", "#6da7ec", "#f0efec", "#ec8a89", "#b52b2a"])
 
-# Couleur par entité (stable d'une figure à l'autre) — la couleur suit le modèle, pas son rang.
+# Couleur par entité (stable d'une figure à l'autre) : la couleur suit le modèle, pas son rang.
 MODEL_COLORS = {
     "stid": CAT[0], "gwnet": CAT[1], "ha": MUTED, "last_value": AXIS,
     "gwnet_road": CAT[3], "gwnet_adaptive": CAT[2], "gwnet_nograph": CAT[4],

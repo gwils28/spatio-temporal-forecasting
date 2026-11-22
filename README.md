@@ -51,10 +51,10 @@ make figures site                         # figures, tableaux, notebook, site
 
 | Modèle (METR-LA, test) | MAE 15 min | MAE 30 min | MAE 60 min | s / époque | Latence batch 64 |
 |---|---|---|---|---|---|
-| Moyenne historique | 4.19 | 4.19 | 4.19 | — | — |
+| Moyenne historique | 4.19 | 4.19 | 4.19 | - | - |
 | **STID** (sans graphe) | 2.80 | 3.17 | 3.54 | **5.8** | **0.6 ms** |
 | **Graph WaveNet** (route + adaptative) | **2.69** | **3.07** | **3.53** | 53.8 | 70 ms |
-| Graph WaveNet *sans graphe* | 2.99 | 3.59 | 4.45 | 39.2 | — |
+| Graph WaveNet *sans graphe* | 2.99 | 3.59 | 4.45 | 39.2 | - |
 
 **Verdict (critère fixé avant les résultats) : le graphe ne gagne pas son pari en moyenne.**
 Même MAE à 60 min, pour un coût d'entraînement 10 fois plus élevé et une latence en batch

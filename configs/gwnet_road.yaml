@@ -1,4 +1,4 @@
-# Graph WaveNet — graphe : road (hyperparamètres du papier)
+# Graph WaveNet, graphe : road (hyperparamètres du papier)
 name: gwnet_road
 model: gwnet
 seed: 0

@@ -48,7 +48,7 @@ website:
     - title: Veille
       contents: [veille/foundation-models.qmd, veille/stid.qmd, veille/dcrnn.qmd]
   page-footer:
-    left: "Wilson Goma · veille ML — prévision spatio-temporelle"
+    left: "Wilson Goma · veille ML, prévision spatio-temporelle"
     right: "Construit avec [Quarto](https://quarto.org)"
 
 format:

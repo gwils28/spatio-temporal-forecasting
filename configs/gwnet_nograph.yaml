@@ -1,4 +1,4 @@
-# Graph WaveNet — graphe : none (hyperparamètres du papier)
+# Graph WaveNet, graphe : none (hyperparamètres du papier)
 name: gwnet_nograph
 model: gwnet
 seed: 0

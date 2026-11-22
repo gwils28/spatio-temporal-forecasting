@@ -199,7 +199,7 @@ def split_timeline(df):
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     ax.spines["left"].set_visible(False)
-    ax.set_title("Split chronologique 70 / 10 / 20 — nombre de fenêtres 12→12 par bloc")
+    ax.set_title("Split chronologique 70 / 10 / 20 (nombre de fenêtres 12→12 par bloc)")
     viz.save(fig, OUT / "eda_split.png")
 
 
