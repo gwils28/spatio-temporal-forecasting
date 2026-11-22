@@ -1,7 +1,7 @@
-# CLAUDE.md — spatio-temporal-forecasting
+# CLAUDE.md (spatio-temporal-forecasting)
 
 Question du projet : un STGNN (Graph WaveNet) bat-il STID (MLP + identités) sur METR-LA
-d'une marge qui justifie son coût ? Protocole figé dans `SPEC.md` — ne pas le modifier
+d'une marge qui justifie son coût ? Protocole figé dans `SPEC.md` : ne pas le modifier
 pour accommoder un résultat.
 
 ## Commandes
@@ -15,13 +15,19 @@ pour accommoder un résultat.
 - Split chronologique, scaler ajusté sur le train seulement, test lu une fois par run.
 - `data/raw/` est en lecture seule et non versionné (`.gitignore`).
 - Tout chiffre publié dans `site/` vient d'un fichier de `results/` ou d'une source
-  citée dans `docs/notes/veille_fiches.md` — jamais de mémoire.
+  citée dans `docs/notes/veille_fiches.md`, jamais de mémoire.
 
 ## Conventions
 - Code et commentaires : docstrings en français, noms en anglais.
 - Commits : Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `exp:`, `chore:`).
 - Figures générées par script dans `site/figures/` (reproductibles), pas à la main.
 - Déviations au plan : consigner dans `docs/notes/implementation.md`.
+
+## Typographie
+- N'utilise JAMAIS le tiret cadratin (U+2014), ni dans le code, ni dans les commentaires,
+  ni dans la documentation, ni dans tes réponses.
+- À la place, utilise une virgule, deux-points, des parenthèses ou un tiret simple "-".
+- Garde-fou : `.claude/hooks/no_em_dash.py` (PreToolUse et Stop, voir `.claude/settings.json`).
 
 ## Compaction
 En cas de compaction, conserver : la question, le critère de décision de `SPEC.md`,
